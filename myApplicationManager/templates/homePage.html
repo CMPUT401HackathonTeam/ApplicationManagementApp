@@ -1,75 +1,161 @@
 {% load static %}
 <!DOCTYPE html>
-    <html lang="en-US">
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Job Dashboard</title>
-            <link rel="stylesheet" href="{% static 'homepage.css' %}">
-        </head>
-        <body>
-        <div class="app">
+<html lang="en-US">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Dashboard</title>
+    <link rel="stylesheet" href="{% static 'homepage.css' %}">
+    </head>
+<body>
+  <div class="app">
 
-        <aside class="sidebar">
-        <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
+    <aside class="sidebar">
+      <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
 
-        <div class="profile">
+      <div class="profile">
         <div class="avatar" aria-hidden="true">
-        <div class="placeholder">P</div>
+          <div class="placeholder">P</div>
         </div>
         <div class="meta">
-        <div class="name">Profile</div>
+          <div class="name">Profile</div>
         </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#dashboard" class="active" data-view="dashboard"><span class="icon">🏠</span><span>Dashboard</span></a>
+        <a href="#inbox" data-view="inbox"><span class="icon">📥</span><span>Inbox</span></a>
+        <a href="#applications" data-view="applications"><span class="icon">📝</span><span>Applications</span></a>
+        <a href="#jobs" data-view="jobs"><span class="icon">💼</span><span>Jobs</span></a>
+        <a href="#resume" data-view="resume"><span class="icon">📄</span><span>Resume</span></a>
+      </nav>
+
+      <div style="margin-top:auto; font-size:12px; color:#9ca3af; opacity:.9;"></div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="title" id="page-title">Overview</div>
+
+        <div class="filters" id="filters" hidden>
+          <select id="filter-scope" aria-label="Scope">
+            <option value="all" selected>All</option>
+          </select>
+          <select id="filter-read" aria-label="Read Status">
+            <option value="unread">Unread</option>
+            <option value="read">Read</option>
+          </select>
+          <select id="filter-sort" aria-label="Sort">
+            <option value="newest" selected>Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
         </div>
+      </div>
 
-
-        <nav class="nav" aria-label="Primary">
-        <a href="#" class="active"><span class="icon">🏠</span><span>Dashboard</span></a>
-        <a href="#"><span class="icon">📥</span><span>Inbox</span></a>
-        <a href="#"><span class="icon">📝</span><span>Applications</span></a>
-        <a href="#"><span class="icon">💼</span><span>Jobs</span></a>
-        <a href="#"><span class="icon">📄</span><span>Resume</span></a>
-        </nav>
-
-
-        <div style="margin-top:auto; font-size:12px; color:#9ca3af; opacity:.9;">
-        </div>
-        </aside>
-
-        <main class="main">
-        <div class="topbar">
-        <div class="title">Overview</div>
-        </div>
-
-
+      <section id="dashboard-view" class="view">
         <section class="stats-grid" aria-label="Stats">
-        <article class="card" tabindex="0">
-        <h3>Applications Submitted</h3>
-        <div class="kpi">0</div>
-        <div class="muted">30 Days</div>
-        </article>
+          <article class="card" tabindex="0">
+            <h3>Applications Submitted</h3>
+            <div class="kpi">0</div>
+            <div class="muted">30 Days</div>
+          </article>
 
+          <article class="card" tabindex="0">
+            <h3>Interviews Booked</h3>
+            <div class="kpi">0</div>
+          </article>
 
-        <article class="card" tabindex="0">
-        <h3>Interviews Booked</h3>
-        <div class="kpi">0</div>
-        </article>
+          <article class="card" tabindex="0">
+            <h3>Current Openings</h3>
+            <div class="kpi">0</div>
+            <div class="muted">Based on your preference</div>
+          </article>
 
-
-        <article class="card" tabindex="0">
-        <h3>Current Openings</h3>
-        <div class="kpi">0</div>
-        <div class="muted">Based on your preference</div>
-        </article>
-
-
-        <article class="card" tabindex="0">
-        <h3>Inbox</h3>
-        <div class="kpi">0</div>
-        <div class="muted">0 unread</div>
-        </article>
+          <article class="card" tabindex="0">
+            <h3>Inbox</h3>
+            <div class="kpi">0</div>
+            <div class="muted">0 unread</div>
+          </article>
         </section>
-        </main>
-        </div>
-    </body>
+      </section>
+
+      <section id="inbox-view" class="view hidden" aria-label="Inbox">
+        <ul class="inbox-list">
+          <li class="inbox-item">
+            <div class="inbox-from">Recruiter · ACME</div>
+            <div class="inbox-subject">Interview availability this week</div>
+            <div class="inbox-meta">Unread · 2h ago</div>
+          </li>
+          <li class="inbox-item read">
+            <div class="inbox-from">HR · Globex</div>
+            <div class="inbox-subject">Your application was received</div>
+            <div class="inbox-meta">Read · Yesterday</div>
+          </li>
+        </ul>
+      </section>
+
+      <section id="applications-view" class="view hidden"></section>
+      <section id="jobs-view" class="view hidden"></section>
+      <section id="resume-view" class="view hidden"></section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const navLinks = document.querySelectorAll('.nav a[data-view]');
+      const views = {
+        dashboard: document.getElementById('dashboard-view'),
+        inbox: document.getElementById('inbox-view'),
+        applications: document.getElementById('applications-view'),
+        jobs: document.getElementById('jobs-view'),
+        resume: document.getElementById('resume-view')
+      };
+      const pageTitle = document.getElementById('page-title');
+      const filters = document.getElementById('filters');
+
+      function setActive(link) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        if (link) link.classList.add('active');
+      }
+
+      function showView(name) {
+        Object.entries(views).forEach(([k, el]) => {
+          if (!el) return;
+          if (k === name) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        });
+
+        if (name === 'inbox') {
+          pageTitle.textContent = 'Inbox';
+          filters.hidden = false;
+        } else {
+          pageTitle.textContent = (name === 'dashboard') ? 'Overview' : name[0].toUpperCase() + name.slice(1);
+          filters.hidden = true;
+        }
+      }
+
+      navLinks.forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const view = a.getAttribute('data-view');
+          setActive(a);
+          showView(view);
+          history.pushState(null, '', '#' + view); 
+        });
+      });
+
+      const initial = (location.hash || '#dashboard').replace('#', '');
+      const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
+      setActive(initialLink || document.querySelector('.nav a[data-view="dashboard"]'));
+      showView(initial in views ? initial : 'dashboard');
+
+      window.addEventListener('popstate', () => {
+        const v = (location.hash || '#dashboard').replace('#', '');
+        const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
+        setActive(link);
+        showView(v in views ? v : 'dashboard');
+      });
+    })();
+  </script>
+</body>
 </html>

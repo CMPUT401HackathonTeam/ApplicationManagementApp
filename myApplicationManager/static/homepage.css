@@ -95,3 +95,26 @@ ul { list-style: none; margin: 0; padding: 0; }
   .sidebar { width: 220px; }
   .stats-grid { grid-template-columns: 1fr; }
 }
+
+.view.hidden { display: none; }
+.filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.filters select {
+  appearance: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 14px;
+}
+
+.inbox-list {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
