@@ -1,1 +1,75 @@
-<h1>THIS WILL BE THE HOME PAGE</h1>
+{% load static %}
+<!DOCTYPE html>
+    <html lang="en-US">
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Job Dashboard</title>
+            <link rel="stylesheet" href="{% static 'homepage.css' %}">
+        </head>
+        <body>
+        <div class="app">
+
+        <aside class="sidebar">
+        <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
+
+        <div class="profile">
+        <div class="avatar" aria-hidden="true">
+        <div class="placeholder">P</div>
+        </div>
+        <div class="meta">
+        <div class="name">Profile</div>
+        </div>
+        </div>
+
+
+        <nav class="nav" aria-label="Primary">
+        <a href="#" class="active"><span class="icon">🏠</span><span>Dashboard</span></a>
+        <a href="#"><span class="icon">📥</span><span>Inbox</span></a>
+        <a href="#"><span class="icon">📝</span><span>Applications</span></a>
+        <a href="#"><span class="icon">💼</span><span>Jobs</span></a>
+        <a href="#"><span class="icon">📄</span><span>Resume</span></a>
+        </nav>
+
+
+        <div style="margin-top:auto; font-size:12px; color:#9ca3af; opacity:.9;">
+        </div>
+        </aside>
+
+        <main class="main">
+        <div class="topbar">
+        <div class="title">Overview</div>
+        </div>
+
+
+        <section class="stats-grid" aria-label="Stats">
+        <article class="card" tabindex="0">
+        <h3>Applications Submitted</h3>
+        <div class="kpi">0</div>
+        <div class="muted">30 Days</div>
+        </article>
+
+
+        <article class="card" tabindex="0">
+        <h3>Interviews Booked</h3>
+        <div class="kpi">0</div>
+        </article>
+
+
+        <article class="card" tabindex="0">
+        <h3>Current Openings</h3>
+        <div class="kpi">0</div>
+        <div class="muted">Based on your preference</div>
+        </article>
+
+
+        <article class="card" tabindex="0">
+        <h3>Inbox</h3>
+        <div class="kpi">0</div>
+        <div class="muted">0 unread</div>
+        </article>
+        </section>
+        </main>
+        </div>
+    </body>
+</html>
