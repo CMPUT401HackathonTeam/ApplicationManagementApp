@@ -1,0 +1,33 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'myApplicationManager/style.css' %}">
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('login_button').addEventListener('click', function(){
+            document.getElementById('loadingtext').hidden = false;
+        });
+     });
+    </script>
+    <title>Login</title>
+</head>
+<body>
+
+    <div class="container">
+        <section>
+
+         <h1>My Application Tracker</h1> 
+        </section>  
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" id="login_button" class="login_button">LOGIN</button>
+            <a href="{% url 'myApplicationManager:register' %}"> 
+                <p>Don't have an account? Register here.</p>
+            </a>
+        </form>
+    </div> 
+    <h2 id='loadingtext' hidden>Loading...</h2>
+</body>
+</html>

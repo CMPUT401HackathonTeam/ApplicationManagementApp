@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inclusive+Sans:ital,wght@0,300..700;1,300..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+body {
+    font-family: "Inclusive Sans", sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    height: 43.75em;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1{
+    font-family: "Inclusive Sans", sans-serif;
+}
+.container {
+    background-color: #1f7ced0f;
+    padding: 2rem;
+    border: 0.0625em solid #ccc;
+    border-radius: 0.5em;
+    box-shadow: 0 0.125em 0.5em rgba(0, 0, 0, 0.1);
+    max-width: 25em;
+    width: 90%;
+}
+.login_button {
+    font-family: "Inclusive Sans", sans-serif;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgb(137, 172, 225);
+    border: none;
+    border-radius: 0.6em;
+    padding: 0.5em 1.5em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+.login_button:hover {
+    background-color: #1700aa; 
+}
+.container h1 {
+    text-align: center;
+    color: rgb(79, 108, 225);
+}
+
+h2{
+    color:gray;
+}
+
+
+label{
+    font-family: "Inclusive Sans", sans-serif;
+    padding: 1em;
+    text-align: left;
+    font-size: 1.2em ;
+   
+}
+
+input{
+    border-radius: 0.5em;
+    padding:0.6em;
+    font-size: 1.2em;
+    border-style: groove;
+}
+
+.registerButtonSection{
+    padding-top:2em;
+    text-align: center;
+
+}
+.register_button{
+    font-family: "Inclusive Sans", sans-serif;
+    font-size: 2em;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: rgb(137, 172, 225);
+    border: none;
+    border-radius: 0.6em;
+    padding: 0.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+.regForm{
+    text-align: center;
+}
+
+.register_button:hover {
+    background-color: #1700aa; 
+}
+
+#registrationTitle{
+    text-align: center;
+    font-size: 2em;
+    color:#0047aa
+
+}

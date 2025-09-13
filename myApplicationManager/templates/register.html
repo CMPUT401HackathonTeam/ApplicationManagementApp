@@ -1,0 +1,49 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'myApplicationManager/style.css' %}">
+<!DOCTYPE html>
+<html>
+<body>
+
+ <form method="post">
+    {% csrf_token %}
+
+    <section id="registrationTitle">
+    <h1>Register</h1>
+    </section>
+
+<form method="POST">
+    {% csrf_token %}
+    
+    <section class="container">
+        <section class="regForm">
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error" style="color: red;">
+                        {% for error in field.errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <div class="error" style="color: red;">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        </section>
+
+        <section class="registerButtonSection">
+        <button type="submit" id="register_button" class="register_button">SUBMIT</button>
+        </section>    
+    
+    </section>
+</form>
+
+</body>
