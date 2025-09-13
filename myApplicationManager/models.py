@@ -44,7 +44,7 @@ class BaseModel(models.Model):
         self.save()
         
         
-class JobApplication(models.Model):
+class JobApplication(BaseModel):
     '''A class representing a job application on the website
        Each Job Application is Associated with a specific user
        FIELDS:
@@ -55,6 +55,13 @@ class JobApplication(models.Model):
         - Status
     
     '''
+    StatusChoices=[
+        ('ACCEPTED', 'accepted'),
+        ('REJECTED', 'rejected'),
+        ('APPLIED', 'applied'),
+        ('INTERVIEW', 'interview'),
+    ]
+    status = models.CharField(max_length=20, choices=StatusChoices, default='APPLIED')
     companyName = models.TextField(default="")
     postion = models.TextField(default="")
     
