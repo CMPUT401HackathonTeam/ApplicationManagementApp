@@ -1,0 +1,249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Applications - Job Portal</title>
+    <link rel="stylesheet" href="{% static 'homepage.css' %}">
+    <style>
+        .applications-container {
+            padding: 20px;
+        }
+        
+        .status-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .status-card.applied { border-left: 4px solid #3b82f6; }
+        .status-card.interview { border-left: 4px solid #f59e0b; }
+        .status-card.accepted { border-left: 4px solid #10b981; }
+        .status-card.rejected { border-left: 4px solid #ef4444; }
+        
+        .status-count {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .applications-list {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .application-item {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .application-item:last-child {
+            border-bottom: none;
+        }
+        
+        .application-info h3 {
+            margin: 0 0 5px 0;
+            color: #1f2937;
+        }
+        
+        .application-info p {
+            margin: 0;
+            color: #6b7280;
+        }
+        
+        .status-select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .status-applied { background-color: #dbeafe; color: #1e40af; }
+        .status-interview { background-color: #fef3c7; color: #92400e; }
+        .status-accepted { background-color: #d1fae5; color: #065f46; }
+        .status-rejected { background-color: #fee2e2; color: #991b1b; }
+        
+        .no-applications {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        
+        .back-button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="applications-container">
+        <a href="{% url 'myApplicationManager:homepage' %}" class="back-button">← Back to Dashboard</a>
+        
+        <h1>My Applications</h1>
+        
+        <!-- Status Statistics -->
+        <div class="status-stats">
+            <div class="status-card applied">
+                <h3>Applied</h3>
+                <div class="status-count">{{ status_counts.APPLIED|default:0 }}</div>
+            </div>
+            <div class="status-card interview">
+                <h3>Interview</h3>
+                <div class="status-count">{{ status_counts.INTERVIEW|default:0 }}</div>
+            </div>
+            <div class="status-card accepted">
+                <h3>Accepted</h3>
+                <div class="status-count">{{ status_counts.ACCEPTED|default:0 }}</div>
+            </div>
+            <div class="status-card rejected">
+                <h3>Rejected</h3>
+                <div class="status-count">{{ status_counts.REJECTED|default:0 }}</div>
+            </div>
+        </div>
+        
+        <!-- Applications List -->
+        <div class="applications-list">
+            {% if applications %}
+                {% for application in applications %}
+                <div class="application-item">
+                    <div class="application-info">
+                        <h3>{{ application.jobID.companyName|default:"Unknown Company" }}</h3>
+                        <p>{{ application.jobID.position|default:"Unknown Position" }}</p>
+                        <small>Applied: {{ application.jobID.created_at|date:"M d, Y"|default:"Unknown Date" }}</small>
+                    </div>
+                    <div>
+                        <select class="status-select status-{{ application.status|lower }}" 
+                                data-application-id="{{ application.id }}"
+                                onchange="updateStatus(this)">
+                            <option value="APPLIED" {% if application.status == 'APPLIED' %}selected{% endif %}>Applied</option>
+                            <option value="INTERVIEW" {% if application.status == 'INTERVIEW' %}selected{% endif %}>Interview</option>
+                            <option value="ACCEPTED" {% if application.status == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
+                            <option value="REJECTED" {% if application.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-applications">
+                    <h3>No Applications Yet</h3>
+                    <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(selectElement) {
+            const applicationId = selectElement.dataset.applicationId;
+            const newStatus = selectElement.value;
+            
+            fetch('{% url "myApplicationManager:update_application_status" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    application_id: applicationId,
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the select element styling
+                    selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
+                    
+                    // Show success message
+                    showMessage('Status updated successfully!', 'success');
+                    
+                    // Reload the page to update statistics
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showMessage('Error updating status: ' + data.error, 'error');
+                    // Revert the selection
+                    selectElement.value = selectElement.dataset.originalValue;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Error updating status. Please try again.', 'error');
+                // Revert the selection
+                selectElement.value = selectElement.dataset.originalValue;
+            });
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        function showMessage(message, type) {
+            // Create a simple message display
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 6px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
+            `;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+        
+        // Store original values for reverting
+        document.addEventListener('DOMContentLoaded', function() {
+            const selects = document.querySelectorAll('.status-select');
+            selects.forEach(select => {
+                select.dataset.originalValue = select.value;
+            });
+        });
+    </script>
+</body>
+</html>

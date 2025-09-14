@@ -6,6 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Dashboard</title>
     <link rel="stylesheet" href="{% static 'homepage.css' %}">
+    <style>
+      .applications-container {
+        padding: 20px;
+      }
+      
+      .application-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin: 10px 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .application-info h3 {
+        margin: 0 0 5px 0;
+        color: #1f2937;
+      }
+      
+      .application-info p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+      }
+      
+      .application-info small {
+        color: #9ca3af;
+        font-size: 12px;
+      }
+      
+      .status-select {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      
+      .status-applied { background-color: #dbeafe; color: #1e40af; }
+      .status-interview { background-color: #fef3c7; color: #92400e; }
+      .status-accepted { background-color: #d1fae5; color: #065f46; }
+      .status-rejected { background-color: #fee2e2; color: #991b1b; }
+      
+      .no-applications {
+        text-align: center;
+        padding: 40px;
+        color: #6b7280;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .applications-list {
+        margin-top: 20px;
+      }
+    </style>
     </head>
 <body>
   <div class="app">
@@ -84,7 +143,17 @@
         </ul>
       </section>
 
-      <section id="applications-view" class="view hidden"></section>
+      <section id="applications-view" class="view hidden">
+        <div class="applications-container">
+          <h2>My Applications</h2>
+          <div id="applications-stats" class="stats-grid"></div>
+          <div id="applications-list" class="applications-list"></div>
+          <div id="no-applications" class="no-applications hidden">
+            <h3>No Applications Yet</h3>
+            <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
+          </div>
+        </div>
+      </section>
       <section id="jobs-view" class="view hidden"></section>
       <section id="resume-view" class="view hidden"></section>
     </main>
@@ -118,6 +187,10 @@
         if (name === 'inbox') {
           pageTitle.textContent = 'Inbox';
           filters.hidden = false;
+        } else if (name === 'applications') {
+          pageTitle.textContent = 'Applications';
+          filters.hidden = true;
+          loadApplicationsData();
         } else {
           pageTitle.textContent = (name === 'dashboard') ? 'Overview' : name[0].toUpperCase() + name.slice(1);
           filters.hidden = true;
@@ -145,6 +218,147 @@
         setActive(link);
         showView(v in views ? v : 'dashboard');
       });
+
+      // Load applications data
+      function loadApplicationsData() {
+        fetch('{% url "myApplicationManager:get_applications_data" %}')
+          .then(response => response.json())
+          .then(data => {
+            displayApplicationsData(data);
+          })
+          .catch(error => {
+            console.error('Error loading applications:', error);
+            showApplicationsError();
+          });
+      }
+
+      function displayApplicationsData(data) {
+        const statsContainer = document.getElementById('applications-stats');
+        const listContainer = document.getElementById('applications-list');
+        const noApplications = document.getElementById('no-applications');
+
+        // Display statistics
+        statsContainer.innerHTML = `
+          <article class="card">
+            <h3>Applied</h3>
+            <div class="kpi">${data.status_counts.APPLIED || 0}</div>
+          </article>
+          <article class="card">
+            <h3>Interview</h3>
+            <div class="kpi">${data.status_counts.INTERVIEW || 0}</div>
+          </article>
+          <article class="card">
+            <h3>Accepted</h3>
+            <div class="kpi">${data.status_counts.ACCEPTED || 0}</div>
+          </article>
+          <article class="card">
+            <h3>Rejected</h3>
+            <div class="kpi">${data.status_counts.REJECTED || 0}</div>
+          </article>
+        `;
+
+        // Display applications list
+        if (data.applications && data.applications.length > 0) {
+          noApplications.classList.add('hidden');
+          listContainer.innerHTML = data.applications.map(app => `
+            <div class="application-item">
+              <div class="application-info">
+                <h3>${app.company_name}</h3>
+                <p>${app.position}</p>
+                <small>Applied: ${app.applied_date}</small>
+              </div>
+              <div>
+                <select class="status-select status-${app.status.toLowerCase()}" 
+                        data-application-id="${app.id}"
+                        onchange="updateApplicationStatus(this)">
+                  <option value="APPLIED" ${app.status === 'APPLIED' ? 'selected' : ''}>Applied</option>
+                  <option value="INTERVIEW" ${app.status === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
+                  <option value="ACCEPTED" ${app.status === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
+                  <option value="REJECTED" ${app.status === 'REJECTED' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          listContainer.innerHTML = '';
+          noApplications.classList.remove('hidden');
+        }
+      }
+
+      function showApplicationsError() {
+        const listContainer = document.getElementById('applications-list');
+        listContainer.innerHTML = '<div class="error">Error loading applications. Please try again.</div>';
+      }
+
+      function updateApplicationStatus(selectElement) {
+        const applicationId = selectElement.dataset.applicationId;
+        const newStatus = selectElement.value;
+        
+        fetch('{% url "myApplicationManager:update_application_status" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify({
+            application_id: applicationId,
+            status: newStatus
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
+            showMessage('Status updated successfully!', 'success');
+            // Reload applications data to update statistics
+            loadApplicationsData();
+          } else {
+            showMessage('Error updating status: ' + data.error, 'error');
+            selectElement.value = selectElement.dataset.originalValue;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showMessage('Error updating status. Please try again.', 'error');
+          selectElement.value = selectElement.dataset.originalValue;
+        });
+      }
+
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      function showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 15px 20px;
+          border-radius: 6px;
+          color: white;
+          font-weight: bold;
+          z-index: 1000;
+          ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
+        `;
+        messageDiv.textContent = message;
+        document.body.appendChild(messageDiv);
+        
+        setTimeout(() => {
+          messageDiv.remove();
+        }, 3000);
+      }
     })();
   </script>
 </body>
