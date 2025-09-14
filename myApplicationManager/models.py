@@ -88,6 +88,9 @@ class JobsToApply(BaseModel):
     position = models.TextField(default="")
     salary = models.TextField(default="")
     jobDetails = models.TextField(default="")
+    appliedDate= models.DateTimeField(default=get_mst_time)
+  
+
     
     
     

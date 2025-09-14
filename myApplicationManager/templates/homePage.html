@@ -52,14 +52,90 @@
       border: none;
       cursor: pointer;
     }
+
+    /* -------- Jobs Styling -------- */
+    .job-card {
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      margin: 10px 0;
+      background: #f9fafb;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .job-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .job-card h3 {
+      margin: 0 0 8px 0;
+      color: #1f2937;
+      font-size: 18px;
+    }
+
+    .job-card p {
+      margin: 4px 0;
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    .job-card button.apply-btn {
+      margin-top: 10px;
+      padding: 0.5em 1em;
+      background: #1e40af;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .job-card button.apply-btn:hover {
+      background: #2563eb;
+    }
+
+    /* -------- Profile Styling -------- */
+    .profile-container-full {
+      padding: 20px;
+      background: transparent;
+      max-width: none;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    #profile-container ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1e3a8a;
+    }
+
+    #profile-container li { margin-bottom: 10px; }
+
+    #profile-container a {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 0.5em 1em;
+      background: #1e40af;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    #profile-container a:hover { background: #2563eb; }
   </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
     <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
-
-    <!-- ✅ Make Profile Clickable -->
     <div class="profile">
       <a href="#profile" data-view="profile" style="text-decoration:none; color:inherit;">
         <div class="avatar" aria-hidden="true">
@@ -70,7 +146,6 @@
         </div>
       </a>
     </div>
-
     <nav class="nav" aria-label="Primary">
       <a href="#dashboard" class="active" data-view="dashboard"><span class="icon">🏠</span><span>Dashboard</span></a>
       <a href="#inbox" data-view="inbox"><span class="icon">📥</span><span>Inbox</span></a>
@@ -78,8 +153,6 @@
       <a href="#jobs" data-view="jobs"><span class="icon">💼</span><span>Jobs</span></a>
       <a href="#resume" data-view="resume"><span class="icon">📄</span><span>Resume</span></a>
     </nav>
-
-    <!-- Logout & Footer -->
     <div style="margin-top:auto; display:flex; flex-direction:column; gap:0.5em;">
       <form method="post" action="{% url 'myApplicationManager:logout' %}">
         {% csrf_token %}
@@ -112,25 +185,26 @@
       <section class="stats-grid" aria-label="Stats">
         <article class="card" tabindex="0">
           <h3>Applications Submitted</h3>
-          <div class="kpi">0</div>
+          <div class="kpi" id="kpi-applications-submitted">0</div>
           <div class="muted">30 Days</div>
         </article>
         <article class="card" tabindex="0">
           <h3>Interviews Booked</h3>
-          <div class="kpi">0</div>
+          <div class="kpi" id="kpi-interviews-booked">0</div>
         </article>
         <article class="card" tabindex="0">
           <h3>Current Openings</h3>
-          <div class="kpi">0</div>
+          <div class="kpi" id="kpi-current-openings">0</div>
           <div class="muted">Based on your preference</div>
         </article>
         <article class="card" tabindex="0">
           <h3>Inbox</h3>
-          <div class="kpi">0</div>
+          <div class="kpi" id="kpi-inbox">0</div>
           <div class="muted">0 unread</div>
         </article>
       </section>
     </section>
+
 
     <section id="inbox-view" class="view hidden" aria-label="Inbox">
       <ul class="inbox-list"></ul>
@@ -141,9 +215,7 @@
         <h2>My Applications</h2>
         <div id="applications-stats" class="stats-grid"></div>
         <div id="applications-list" class="applications-list"></div>
-        <div id="no-applications" class="no-applications hidden">
-          <h3>No Applications Yet</h3>
-          <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
+        <div id="no-applications" >
         </div>
       </div>
     </section>
@@ -151,56 +223,14 @@
     <section id="jobs-view" class="view hidden"></section>
     <section id="resume-view" class="view hidden"></section>
 
-   <!-- ✅ Profile Page View -->
-<section id="profile-view" class="view hidden">
-  <div class="profile-container-full">
-    <h2>My Profile</h2>
-    <div id="profile-container">
-      <p>Loading profile...</p>
-    </div>
-  </div>
-</section>
-
-<style>
-  /* Make profile container fill more of the page */
-  .profile-container-full {
-    padding: 20px;
-    background: transparent; /* remove the light blue box */
-    max-width: none; /* remove max width restriction */
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  /* Style profile details */
-  #profile-container ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: #1e3a8a;
-  }
-
-  #profile-container li {
-    margin-bottom: 10px;
-  }
-
-  #profile-container a {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 0.5em 1em;
-    background: #1e40af;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  #profile-container a:hover {
-    background: #2563eb;
-  }
-</style>
-
+    <section id="profile-view" class="view hidden">
+      <div class="profile-container-full">
+        <h2>My Profile</h2>
+        <div id="profile-container">
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    </section>
 
 <script>
 (function () {
@@ -222,37 +252,28 @@
   }
 
   function showView(name) {
-    Object.entries(views).forEach(([k, el]) => {
-      if (!el) return;
-      el.classList.toggle('hidden', k !== name);
-    });
-
+    Object.entries(views).forEach(([k, el]) => el && el.classList.toggle('hidden', k !== name));
     if (name === 'inbox') {
-      pageTitle.textContent = 'Inbox';
-      filters.hidden = false;
+      pageTitle.textContent = 'Inbox'; filters.hidden = false;
     } else if (name === 'applications') {
-      pageTitle.textContent = 'Applications';
-      filters.hidden = true;
-      loadApplicationsData();
+      pageTitle.textContent = 'Applications'; filters.hidden = true; loadApplicationsData();
+    } else if (name === 'jobs') {
+      pageTitle.textContent = 'Jobs'; filters.hidden = true; loadJobsData();
     } else if (name === 'profile') {
-      pageTitle.textContent = 'Profile';
-      filters.hidden = true;
-      loadProfileData();
+      pageTitle.textContent = 'Profile'; filters.hidden = true; loadProfileData();
+    } else if (name === 'dashboard') {
+      pageTitle.textContent = 'Overview'; filters.hidden = true; updateDashboardKPIs();
     } else {
-      pageTitle.textContent = (name === 'dashboard') ? 'Overview' : name[0].toUpperCase() + name.slice(1);
+      pageTitle.textContent = name[0].toUpperCase() + name.slice(1);
       filters.hidden = true;
     }
   }
 
-  navLinks.forEach(a => {
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      const view = a.getAttribute('data-view');
-      setActive(a);
-      showView(view);
-      history.pushState(null, '', '#' + view);
-    });
-  });
+  navLinks.forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const view = a.getAttribute('data-view');
+    setActive(a); showView(view); history.pushState(null, '', '#' + view);
+  }));
 
   const initial = (location.hash || '#dashboard').replace('#', '');
   const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
@@ -262,14 +283,39 @@
   window.addEventListener('popstate', () => {
     const v = (location.hash || '#dashboard').replace('#', '');
     const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
-    setActive(link);
-    showView(v in views ? v : 'dashboard');
+    setActive(link); showView(v in views ? v : 'dashboard');
   });
 
+  /* -------- Dashboard KPIs -------- */
+async function updateDashboardKPIs() {
+  try {
+    const response = await fetch("{% url 'myApplicationManager:get_applications_data' %}");
+    if (!response.ok) throw new Error("Failed to fetch applications");
+
+    const data = await response.json();
+
+    // Applications Submitted = total applications
+    const submitted = Array.isArray(data.applications) ? data.applications.length : 0;
+    const submittedEl = document.getElementById("kpi-applications-submitted");
+    if (submittedEl) submittedEl.textContent = submitted;
+
+    // Interviews Booked = INTERVIEW status count
+    const interviews = data.status_counts?.INTERVIEW || 0;
+    const interviewsEl = document.getElementById("kpi-interviews-booked");
+    if (interviewsEl) interviewsEl.textContent = interviews;
+
+    // Leave Current Openings + Inbox unchanged for now
+  } catch (err) {
+    console.error("Failed to update dashboard KPIs:", err);
+  }
+}
+
+
+  /* -------- Applications -------- */
   function loadApplicationsData() {
     fetch('{% url "myApplicationManager:get_applications_data" %}')
       .then(response => response.json())
-      .then(data => { displayApplicationsData(data); })
+      .then(data => displayApplicationsData(data))
       .catch(() => showApplicationsError());
   }
 
@@ -278,14 +324,15 @@
     const listContainer = document.getElementById('applications-list');
     const noApplications = document.getElementById('no-applications');
 
+    // Update stats
     statsContainer.innerHTML = `
-      <article class="card"><h3>Applied</h3><div class="kpi">${data.status_counts.APPLIED || 0}</div></article>
-      <article class="card"><h3>Interview</h3><div class="kpi">${data.status_counts.INTERVIEW || 0}</div></article>
-      <article class="card"><h3>Accepted</h3><div class="kpi">${data.status_counts.ACCEPTED || 0}</div></article>
-      <article class="card"><h3>Rejected</h3><div class="kpi">${data.status_counts.REJECTED || 0}</div></article>
+      <article class="card"><h3>Applied</h3><div class="kpi">${data.status_counts?.APPLIED || 0}</div></article>
+      <article class="card"><h3>Interview</h3><div class="kpi">${data.status_counts?.INTERVIEW || 0}</div></article>
+      <article class="card"><h3>Accepted</h3><div class="kpi">${data.status_counts?.ACCEPTED || 0}</div></article>
+      <article class="card"><h3>Rejected</h3><div class="kpi">${data.status_counts?.REJECTED || 0}</div></article>
     `;
 
-    if (data.applications?.length) {
+    if (Array.isArray(data.applications) && data.applications.length > 0) {
       noApplications.classList.add('hidden');
       listContainer.innerHTML = data.applications.map(app => `
         <div class="application-item">
@@ -317,6 +364,68 @@
       '<div class="error">Error loading applications. Please try again.</div>';
   }
 
+  /* -------- Jobs -------- */
+  function loadJobsData() {
+    fetch('{% url "myApplicationManager:get_jobs_to_apply" %}')
+      .then(response => response.json())
+      .then(data => displayJobsData(data.jobs))
+      .catch(() => {
+        document.getElementById('jobs-view').innerHTML =
+          '<div class="error">Error loading jobs. Please try again.</div>';
+      });
+  }
+
+  function displayJobsData(jobs) {
+    const container = document.getElementById('jobs-view');
+    if (!jobs.length) {
+      container.innerHTML = '<p>No new jobs to view.</p>';
+      return;
+    }
+
+    container.innerHTML = jobs.map(job => `
+      <div class="job-card">
+        <h3>${job.position} at ${job.companyName}</h3>
+        ${job.salary ? `<p><strong>Salary:</strong> ${job.salary}</p>` : ''}
+        ${job.jobDetails ? `<p>${job.jobDetails}</p>` : ''}
+        <button class="apply-btn" data-job-id="${job.jobID}">Apply</button>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.apply-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyToJob(btn.dataset.jobId));
+    });
+  }
+
+  window.applyToJob = function(jobID) {
+    fetch(`/apply-to-job/${jobID}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({ jobID })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to apply.');
+      return response.json();
+    })
+    .then(() => {
+      alert('Application submitted!');
+      loadJobsData();
+      loadApplicationsData();
+      updateDashboardKPIs();
+    })
+    .catch(err => alert(err.message));
+  }
+
+  function getCSRFToken() {
+    const name = 'csrftoken';
+    const cookies = document.cookie.split(';').map(c => c.trim());
+    const cookie = cookies.find(c => c.startsWith(name + '='));
+    return cookie ? cookie.split('=')[1] : '';
+  }
+
+  /* -------- Profile -------- */
   function loadProfileData() {
     fetch('{% url "myApplicationManager:profile_detail_api" %}')
       .then(response => response.json())
@@ -342,6 +451,9 @@
       });
   }
 })();
+
+
 </script>
+
 </body>
 </html>

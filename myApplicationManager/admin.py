@@ -1,5 +1,5 @@
 from django.contrib import admin
-from.views import JobApplication, Resume, Profile, Skills, Education
+from.views import JobApplication, Resume, Profile, Skills, Education,JobsToApply
 
 
 
@@ -18,3 +18,4 @@ class ProfileAdmin(admin.ModelAdmin):
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(JobApplication)
 admin.site.register(Resume)
+admin.site.register(JobsToApply)

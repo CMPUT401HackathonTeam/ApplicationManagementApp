@@ -20,4 +20,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         "province",
         "postalCode"]
         
-        
+
+class JobsToApplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobsToApply
+        fields = ['jobID', 'companyName', 'position', 'salary', 'jobDetails','appliedDate']

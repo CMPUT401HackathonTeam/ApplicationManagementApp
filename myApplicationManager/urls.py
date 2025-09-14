@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib import admin
-from .views import profile_detail,profile_detail_api,createProfile, profile_edit,profile_edit_api, register,MyLogoutView, MyLoginView, homepage, view_applications, get_applications_data, update_application_status
+from .views import apply_to_job,get_jobs_to_apply,profile_detail,profile_detail_api,createProfile, profile_edit,profile_edit_api, register,MyLogoutView, MyLoginView, homepage, view_applications, get_applications_data, update_application_status
 from django.contrib.auth import views as auth_views
 
 app_name = "myApplicationManager"
@@ -25,4 +25,9 @@ urlpatterns = [
     path('applications/', view_applications, name='view_applications'),
     path('api/applications/', get_applications_data, name='get_applications_data'),
     path('api/applications/update-status/', update_application_status, name='update_application_status'),
+    
+    
+    #Jobs
+    path('api/jobs-to-apply/', get_jobs_to_apply, name='get_jobs_to_apply'),
+     path('apply-to-job/<uuid:jobID>/',apply_to_job, name='apply_to_job'),
 ]

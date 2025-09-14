@@ -7,14 +7,15 @@
  <form method="post">
     {% csrf_token %}
 
-    <section id="registrationTitle">
-    <h1>Register</h1>
-    </section>
+    
 
 <form method="POST">
     {% csrf_token %}
     
     <section class="container">
+        <section id="registrationTitle">
+    <h1>Register</h1>
+    </section>
         <section class="regForm">
         {% for field in form %}
             <div class="form-group">

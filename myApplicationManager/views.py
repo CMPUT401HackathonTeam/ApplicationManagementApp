@@ -6,7 +6,7 @@ from requests.auth import HTTPBasicAuth
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import viewsets, permissions, status
 from .models import JobApplication, Profile, JobsToApply, Resume
-from .serializers import JobApplicationSerializer, ProfileSerializer
+from .serializers import JobApplicationSerializer, ProfileSerializer, JobsToApplySerializer
 from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -216,17 +216,18 @@ def update_application_status(request):
 def get_applications_data(request):
     """API endpoint to get applications data for the dashboard"""
     try:
+        print("HERERERER")
         # Get or create user profile
-        profile, created = Profile.objects.get_or_create(
-            email=request.user.email,
-            defaults={
-                'firstName': request.user.first_name or '',
-                'lastName': request.user.last_name or '',
-            }
+        profile= get_object_or_404(Profile,
+            user=request.user
         )
+       
         
         # Get all applications for this user
         applications = JobApplication.objects.filter(profileID=profile).order_by('-id')
+        print(" THERE ARE THE CURRENT APPLICATIONS", applications[0].profileID)
+        print(applications[0].profileID)
+        print(applications)
         
         # Count applications by status
         status_counts = {
@@ -287,7 +288,7 @@ def profile_edit(request):
     else:
         form = ProfileForm(instance=profile)
 
-    return render(request, "profile_edit.html", {"form": form})
+    return render(request, "profile_edit.html", {"form": form, "user":request.user,"profile":profile})
 
 
 @api_view(['POST'])
@@ -310,3 +311,50 @@ def profile_edit_api(request):
         return Response({"success": True, "message": "Profile updated successfully!"})
     except Exception as e:
         return Response({"success": False, "error": str(e)}, status=400)
+
+
+@api_view(['GET'])
+@login_required
+def get_jobs_to_apply(request):
+    user = request.user
+    profile = user.profile.first()  # adjust if user can have multiple profiles
+
+    # Jobs the user has NOT applied to yet
+    applied_job_ids = JobApplication.objects.filter(profileID=profile).values_list('jobID', flat=True)
+    available_jobs = JobsToApply.objects.exclude(jobID__in=applied_job_ids)
+
+    jobs_list = [{
+        'jobID': str(job.jobID),
+        'companyName': job.companyName,
+        'position': job.position,
+        'salary': job.salary,
+        'jobDetails': job.jobDetails
+    } for job in available_jobs]
+
+    return JsonResponse({'jobs': jobs_list})
+
+@login_required
+@csrf_exempt
+def apply_to_job(request, jobID):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=400)
+
+    user = request.user
+    profile = user.profile.first()  # adjust if multiple profiles
+
+    try:
+        job = JobsToApply.objects.get(jobID=jobID)
+    except JobsToApply.DoesNotExist:
+        return JsonResponse({'error': 'Job not found'}, status=404)
+
+    # Check if already applied
+    if JobApplication.objects.filter(profileID=profile, jobID=job).exists():
+        return JsonResponse({'error': 'Already applied'}, status=400)
+
+    JobApplication.objects.create(
+        profileID=profile,
+        jobID=job,
+        status='APPLIED'
+    )
+
+    return JsonResponse({'success': True})
