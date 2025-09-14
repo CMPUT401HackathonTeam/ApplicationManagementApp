@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="{% static 'homepage.css' %}">
+  <style>
+    body {
+      background: #ebf3ff;
+      font-family: "Inclusive Sans", sans-serif;
+      color: #1e3a8a;
+      margin: 0;
+      padding: 0;
+    }
+
+    .edit-profile-container {
+      max-width: 40em;
+      margin: 3em auto;
+      background: #ffffff;
+      padding: 2em;
+      border-radius: 1em;
+      box-shadow: 0 0.25em 0.75em rgba(29,78,216,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 1.5em;
+      color: #0047aa;
+    }
+
+    form {
+      display: grid;
+      gap: 1.25em;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.25em;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.75em 1em;
+      border-radius: 0.75em;
+      border: 0.0625em solid #93c5fd;
+      background: #f0f5ff;
+      font-size: 1em;
+      color: #1e3a8a;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #1e40af;
+      box-shadow: 0 0 0.25em rgba(29,78,216,0.4);
+    }
+
+    /* Validation colors only after first failed submit */
+    form.validated input:invalid {
+      border-color: #dc2626;
+      background-color: #fee2e2;
+    }
+
+    form.validated input:valid {
+      border-color: #16a34a;
+      background-color: #dcfce7;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 1em;
+      justify-content: flex-end;
+      margin-top: 1em;
+    }
+
+    button {
+      padding: 0.75em 1.5em;
+      border-radius: 0.75em;
+      border: none;
+      font-weight: 700;
+      font-size: 1em;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button.save {
+      background: #1e40af;
+      color: #fff;
+    }
+
+    button.save:hover {
+      background: #2563eb;
+      transform: translateY(-0.125em);
+      box-shadow: 0 0.25em 0.5em rgba(37,99,235,0.3);
+    }
+
+    button.cancel {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    button.cancel:hover {
+      background: #bfdbfe;
+    }
+
+    .success-message {
+      color: #065f46;
+      font-weight: 600;
+      margin-top: 1em;
+      text-align: center;
+    }
+
+    .error-message {
+      color: #991b1b;
+      font-weight: 600;
+      margin-top: 1em;
+      text-align: center;
+    }
+
+    @media (max-width: 40em) {
+      .edit-profile-container {
+        margin: 2em 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="edit-profile-container">
+    <h2>Edit Profile</h2>
+    <form id="editProfileForm">
+      <div>
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" name="firstName" value="{{ profile.firstName }}" required
+               pattern="^[A-Za-z-]{2,30}$"
+               title="First name should be 2-30 letters only">
+      </div>
+      <div>
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" name="lastName" value="{{ profile.lastName }}" required
+               pattern="^[A-Za-z-]{2,30}$"
+               title="Last name should be 2-30 letters only">
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ profile.email }}" required
+               title="Enter a valid email address">
+      </div>
+      <div>
+        <label for="phoneNumber">Phone</label>
+        <input type="tel" id="phoneNumber" name="phoneNumber" value="{{ profile.phoneNumber }}"
+               pattern="^\+?[0-9\s\-\(\)]{7,15}$"
+               title="Enter a valid phone number, e.g., +1-555-123-4567">
+      </div>
+      <div>
+        <label for="street">Street</label>
+        <input type="text" id="street" name="street" value="{{ profile.street }}" required
+               pattern="^[A-Za-z0-9\s\.,#-]{5,100}$"
+               title="Street address should be 5-100 characters">
+      </div>
+      <div>
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" value="{{ profile.city }}" required
+               pattern="^[A-Za-z\s\-]{2,50}$"
+               title="City name should be 2-50 letters">
+      </div>
+      <div>
+        <label for="province">Province</label>
+        <input type="text" id="province" name="province" value="{{ profile.province }}" required
+               pattern="^[A-Za-z\s\-]{2,50}$"
+               title="Province name should be 2-50 letters">
+      </div>
+      <div>
+        <label for="postalCode">Postal Code</label>
+        <input type="text" id="postalCode" name="postalCode" value="{{ profile.postalCode }}" required
+               pattern="^[A-Za-z0-9\s]{3,10}$"
+               title="Enter a valid postal code (3-10 characters)">
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="save">Save</button>
+        <a href="{% url 'myApplicationManager:profile_detail' %}"><button type="button" class="cancel">Cancel</button></a>
+      </div>
+      <div id="message" class=""></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('editProfileForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Add validated class to show red/green colors after first submit
+      form.classList.add('validated');
+
+      // HTML5 validation
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Extra JS validation for phone
+      const phoneRegex = /^\+?[0-9\s\-\(\)]{7,15}$/;
+      if (!phoneRegex.test(form.phoneNumber.value)) {
+        messageDiv.textContent = "Invalid phone number format.";
+        messageDiv.className = "error-message";
+        form.phoneNumber.focus();
+        return;
+      }
+
+      const formData = {
+        firstName: form.firstName.value.trim(),
+        lastName: form.lastName.value.trim(),
+        email: form.email.value.trim(),
+        phoneNumber: form.phoneNumber.value.trim(),
+        street: form.street.value.trim(),
+        city: form.city.value.trim(),
+        province: form.province.value.trim(),
+        postalCode: form.postalCode.value.trim()
+      };
+
+      fetch("{% url 'myApplicationManager:profile_edit_api' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to update profile');
+        return response.json();
+      })
+      .then(data => {
+        if(data.success) {
+          messageDiv.textContent = "Profile updated successfully!";
+          messageDiv.className = "success-message";
+          // Redirect after 2 seconds
+          setTimeout(() => {
+            window.location.href = "{% url 'myApplicationManager:profile_detail' %}";
+          }, 1000);
+        } else {
+          messageDiv.textContent = data.error || "An error occurred";
+          messageDiv.className = "error-message";
+        }
+      })
+      .catch(err => {
+        messageDiv.textContent = err.message;
+        messageDiv.className = "error-message";
+      });
+    });
+  </script>
+</body>
+</html>

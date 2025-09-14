@@ -41,7 +41,7 @@ h1{
 }
 .container h1 {
     text-align: center;
-    color: rgb(79, 108, 225);
+    color: #0047aa
 }
 
 h2{
@@ -96,6 +96,13 @@ div.form-group{
 }
 
 #registrationTitle{
+    text-align: center;
+    font-size: 2em;
+    color:#0047aa;
+
+}
+
+#profileTitle{
     text-align: center;
     font-size: 2em;
     color:#0047aa

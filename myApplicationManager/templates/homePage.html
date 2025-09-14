@@ -1,254 +1,173 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en-US">
-    <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job Dashboard</title>
-    <link rel="stylesheet" href="{% static 'homepage.css' %}">
-    <style>
-      .applications-container {
-        padding: 20px;
-      }
-      
-      .application-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px;
-        margin: 10px 0;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      
-      .application-info h3 {
-        margin: 0 0 5px 0;
-        color: #1f2937;
-      }
-      
-      .application-info p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 14px;
-      }
-      
-      .application-info small {
-        color: #9ca3af;
-        font-size: 12px;
-      }
-      
-      .status-select {
-        padding: 8px 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        background: white;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      
-      .status-applied { background-color: #dbeafe; color: #1e40af; }
-      .status-interview { background-color: #fef3c7; color: #92400e; }
-      .status-accepted { background-color: #d1fae5; color: #065f46; }
-      .status-rejected { background-color: #fee2e2; color: #991b1b; }
-      
-      .no-applications {
-        text-align: center;
-        padding: 40px;
-        color: #6b7280;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      
-      .applications-list {
-        margin-top: 20px;
-      }
-      
-      .hidden {
-        display: none !important;
-      }
-    </style>
-    </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Dashboard</title>
+  <link rel="stylesheet" href="{% static 'homepage.css' %}">
+  <style>
+    .applications-container { padding: 20px; }
+    .application-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px; margin: 10px 0; background: white; border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .application-info h3 { margin: 0 0 5px 0; color: #1f2937; }
+    .application-info p { margin: 0; color: #6b7280; font-size: 14px; }
+    .application-info small { color: #9ca3af; font-size: 12px; }
+    .status-select {
+      padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+      background: white; cursor: pointer; font-size: 14px;
+    }
+    .status-applied { background-color: #dbeafe; color: #1e40af; }
+    .status-interview { background-color: #fef3c7; color: #92400e; }
+    .status-accepted { background-color: #d1fae5; color: #065f46; }
+    .status-rejected { background-color: #fee2e2; color: #991b1b; }
+    .no-applications {
+      text-align: center; padding: 40px; color: #6b7280; background: white;
+      border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .applications-list { margin-top: 20px; }
+    .hidden { display: none !important; }
+
+    .logout-button {
+      text-decoration: none; color: #1e40af; font-weight: 600;
+      padding: 0.5em 1em; border-radius: 0.5em; background: transparent;
+      border: none; cursor: pointer;
+    }
+
+    /* Jobs */
+    .job-card {
+      display: flex; flex-direction: column; padding: 15px; margin: 10px 0;
+      background: #f9fafb; border-radius: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .job-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .job-card h3 { margin: 0 0 8px 0; color: #1f2937; font-size: 18px; }
+    .job-card p { margin: 4px 0; color: #4b5563; font-size: 14px; }
+    .job-card button.apply-btn {
+      margin-top: 10px; padding: 0.5em 1em; background: #1e40af; color: white;
+      border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .job-card button.apply-btn:hover { background: #2563eb; }
+
+    /* Profile */
+    .profile-container-full { padding: 20px; background: transparent; width: 100%; margin: 0 auto; }
+    #profile-container ul { list-style: none; padding: 0; margin: 0; font-size: 16px; line-height: 1.6; color: #1e3a8a; }
+    #profile-container li { margin-bottom: 10px; }
+    #profile-container a {
+      display: inline-block; margin-top: 15px; padding: 0.5em 1em; background: #1e40af;
+      color: white; border-radius: 8px; text-decoration: none; font-weight: 600;
+    }
+    #profile-container a:hover { background: #2563eb; }
+  </style>
+</head>
 <body>
-  <div class="app">
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
+    <div class="profile">
+      <a href="#profile" data-view="profile" style="text-decoration:none; color:inherit;">
+        <div class="avatar" aria-hidden="true"><div class="placeholder">P</div></div>
+        <div class="meta"><div class="name">Profile</div></div>
+      </a>
+    </div>
+    <nav class="nav" aria-label="Primary">
+      <a href="#dashboard" class="active" data-view="dashboard"><span class="icon">🏠</span><span>Dashboard</span></a>
+      <a href="#inbox" data-view="inbox"><span class="icon">📥</span><span>Inbox</span></a>
+      <a href="#applications" data-view="applications"><span class="icon">📝</span><span>Applications</span></a>
+      <a href="#jobs" data-view="jobs"><span class="icon">💼</span><span>Jobs</span></a>
+      <a href="#resume" data-view="resume"><span class="icon">📄</span><span>Resume</span></a>
+    </nav>
+    <div style="margin-top:auto; display:flex; flex-direction:column; gap:0.5em;">
+      <form method="post" action="{% url 'myApplicationManager:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">🔓 Logout</button>
+      </form>
+      <div style="font-size:12px; color:#9ca3af; opacity:.9;">© Job Portal 2025</div>
+    </div>
+  </aside>
 
-    <aside class="sidebar">
-      <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
+  <main class="main">
+    <div class="topbar">
+      <div class="title" id="page-title">Overview</div>
+      <div class="filters" id="filters" hidden>
+        <select id="filter-scope" aria-label="Scope"><option value="all" selected>All</option></select>
+        <select id="filter-read" aria-label="Read Status"><option value="unread">Unread</option><option value="read">Read</option></select>
+        <select id="filter-sort" aria-label="Sort"><option value="newest" selected>Newest</option><option value="oldest">Oldest</option></select>
+      </div>
+    </div>
 
-      <div class="profile">
-        <div class="avatar" aria-hidden="true">
-          <div class="placeholder">P</div>
-        </div>
-        <div class="meta">
-          <div class="name">Profile</div>
+    <!-- Dashboard -->
+    <section id="dashboard-view" class="view">
+      <section class="stats-grid" aria-label="Stats">
+        <article class="card" tabindex="0">
+          <h3>Applications Submitted</h3>
+          <div class="kpi" id="kpi-applications-submitted">0</div>
+          <div class="muted">30 Days</div>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Interviews Booked</h3>
+          <div class="kpi" id="kpi-interviews-booked">0</div>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Current Openings</h3>
+          <div class="kpi" id="kpi-current-openings">0</div>
+          <div class="muted">Based on your preference</div>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Inbox</h3>
+          <div class="kpi" id="kpi-inbox">0</div>
+          <div class="muted">0 unread</div>
+        </article>
+      </section>
+    </section>
+
+    <!-- Inbox -->
+    <section id="inbox-view" class="view hidden" aria-label="Inbox">
+      <ul class="inbox-list"></ul>
+    </section>
+
+    <!-- Applications -->
+    <section id="applications-view" class="view hidden">
+      <div class="applications-container">
+        <h2>My Applications</h2>
+        <div id="applications-stats" class="stats-grid"></div>
+        <div id="applications-list" class="applications-list"></div>
+        <div id="no-applications" class="no-applications hidden">
+          <h3>No Applications Yet</h3>
+          <p>You haven't submitted any job applications yet. Start by adding your first application!</p>
+          <a href="{% url 'myApplicationManager:add_application' %}" style="background-color:#3b82f6;color:white;padding:12px 24px;border-radius:8px;display:inline-block;font-weight:600;text-decoration:none;">Add Your First Application</a>
         </div>
       </div>
+    </section>
 
-      <nav class="nav" aria-label="Primary">
-        <a href="#dashboard" class="active" data-view="dashboard"><span class="icon">🏠</span><span>Dashboard</span></a>
-        <a href="#inbox" data-view="inbox"><span class="icon">📥</span><span>Inbox</span></a>
-        <a href="#applications" data-view="applications"><span class="icon">📝</span><span>Applications</span></a>
-        <a href="#jobs" data-view="jobs"><span class="icon">💼</span><span>Jobs</span></a>
-        <a href="#resume" data-view="resume"><span class="icon">📄</span><span>Resume</span></a>
-      </nav>
+    <!-- Jobs -->
+    <section id="jobs-view" class="view hidden"></section>
 
-      <div style="margin-top:auto; font-size:12px; color:#9ca3af; opacity:.9;"></div>
-    </aside>
+    <!-- Resume (placeholder) -->
+    <section id="resume-view" class="view hidden"></section>
 
-    <main class="main">
-      <div class="topbar">
-        <div class="title" id="page-title">Overview</div>
-
-        <div class="filters" id="filters" hidden>
-          <select id="filter-scope" aria-label="Scope">
-            <option value="all" selected>All</option>
-          </select>
-          <select id="filter-read" aria-label="Read Status">
-            <option value="unread">Unread</option>
-            <option value="read">Read</option>
-          </select>
-          <select id="filter-sort" aria-label="Sort">
-            <option value="newest" selected>Newest</option>
-            <option value="oldest">Oldest</option>
-          </select>
-        </div>
+    <!-- Profile -->
+    <section id="profile-view" class="view hidden">
+      <div class="profile-container-full">
+        <h2>My Profile</h2>
+        <div id="profile-container"><p>Loading profile...</p></div>
       </div>
+    </section>
 
-      <section id="dashboard-view" class="view">
-        <section class="stats-grid" aria-label="Stats">
-          <article class="card" tabindex="0">
-            <h3>Applications Submitted</h3>
-            <div class="kpi">0</div>
-            <div class="muted">30 Days</div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <h3>Interviews Booked</h3>
-            <div class="kpi">0</div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <h3>Current Openings</h3>
-            <div class="kpi">0</div>
-            <div class="muted">Based on your preference</div>
-          </article>
-
-          <article class="card" tabindex="0">
-            <h3>Inbox</h3>
-            <div class="kpi">0</div>
-            <div class="muted">0 unread</div>
-          </article>
-        </section>
-      </section>
-
-      <section id="inbox-view" class="view hidden" aria-label="Inbox">
-        <ul class="inbox-list">
-        </ul>
-      </section>
-
-      <section id="applications-view" class="view hidden">
-        <div class="applications-container">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>My Applications</h2>
-            <button id="add-application-btn" style="background-color: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: background-color 0.2s;">
-              <span>+</span>
-              <span>Add Application</span>
-            </button>
-          </div>
-          
-          <!-- Add Application Form (hidden by default) -->
-          <div id="add-application-form" class="add-form-container hidden" style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-              <h3 style="margin: 0; color: #1f2937;">Add New Application</h3>
-              <button id="cancel-add-btn" style="background: #6b7280; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">Cancel</button>
-            </div>
-            
-            <form id="application-form" method="post" action="{% url 'appsManager:add_application' %}">
-              {% csrf_token %}
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                <div>
-                  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Company Name *</label>
-                  <input type="text" name="company_name" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;" placeholder="Enter company name">
-                </div>
-                <div>
-                  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Position *</label>
-                  <input type="text" name="position" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;" placeholder="Enter position title">
-                </div>
-              </div>
-              
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                <div>
-                  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Stage *</label>
-                  <select name="stage" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
-                    <option value="APPLIED">Applied</option>
-                    <option value="INTERVIEW">Interview</option>
-                    <option value="ACCEPTED">Accepted</option>
-                    <option value="REJECTED">Rejected</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Apply Date *</label>
-                  <input type="date" name="apply_date" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
-                </div>
-              </div>
-              
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                <div>
-                  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Response Date</label>
-                  <input type="date" name="response_date" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
-                </div>
-                <div>
-                  <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Job URL</label>
-                  <input type="text" name="job_url" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;" placeholder="https://example.com/job-posting">
-                </div>
-              </div>
-              
-              <div style="margin-bottom: 16px;">
-                <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: #374151;">
-                  <input type="checkbox" name="is_referred" style="margin: 0;">
-                  Referred?
-                </label>
-              </div>
-              
-              <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #374151;">Notes</label>
-                <textarea name="notes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;" placeholder="Additional notes (optional)"></textarea>
-              </div>
-              
-              <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                <button type="button" id="cancel-form-btn" style="background: #6b7280; color: white; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer;">Cancel</button>
-                <button type="submit" style="background: #3b82f6; color: white; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-weight: 600;">Add Application</button>
-              </div>
-            </form>
-          </div>
-          
-          <div id="applications-stats" class="stats-grid"></div>
-          <div id="applications-list" class="applications-list"></div>
-          <div id="no-applications" class="no-applications hidden">
-            <h3>No Applications Yet</h3>
-            <p>You haven't submitted any job applications yet. Start by adding your first application!</p>
-            <button id="add-first-application-btn" style="background-color: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; cursor: pointer;">
-              <span>+</span>
-              <span>Add Your First Application</span>
-            </button>
-          </div>
-        </div>
-      </section>
-      <section id="jobs-view" class="view hidden"></section>
-      <section id="resume-view" class="view hidden"></section>
-    </main>
-  </div>
-
-  <script>
+    <script>
     (function () {
-      const navLinks = document.querySelectorAll('.nav a[data-view]');
+      const navLinks = document.querySelectorAll('.nav a[data-view], .profile a[data-view]');
       const views = {
         dashboard: document.getElementById('dashboard-view'),
         inbox: document.getElementById('inbox-view'),
         applications: document.getElementById('applications-view'),
         jobs: document.getElementById('jobs-view'),
-        resume: document.getElementById('resume-view')
+        resume: document.getElementById('resume-view'),
+        profile: document.getElementById('profile-view')
       };
       const pageTitle = document.getElementById('page-title');
       const filters = document.getElementById('filters');
@@ -259,34 +178,27 @@
       }
 
       function showView(name) {
-        Object.entries(views).forEach(([k, el]) => {
-          if (!el) return;
-          if (k === name) el.classList.remove('hidden');
-          else el.classList.add('hidden');
-        });
-
+        Object.entries(views).forEach(([k, el]) => el && el.classList.toggle('hidden', k !== name));
         if (name === 'inbox') {
-          pageTitle.textContent = 'Inbox';
-          filters.hidden = false;
+          pageTitle.textContent = 'Inbox'; filters.hidden = false;
         } else if (name === 'applications') {
-          pageTitle.textContent = 'Applications';
-          filters.hidden = true;
-          loadApplicationsData();
+          pageTitle.textContent = 'Applications'; filters.hidden = true; loadApplicationsData();
+        } else if (name === 'jobs') {
+          pageTitle.textContent = 'Jobs'; filters.hidden = true; loadJobsData();
+        } else if (name === 'profile') {
+          pageTitle.textContent = 'Profile'; filters.hidden = true; loadProfileData();
+        } else if (name === 'dashboard') {
+          pageTitle.textContent = 'Overview'; filters.hidden = true; updateDashboardKPIs();
         } else {
-          pageTitle.textContent = (name === 'dashboard') ? 'Overview' : name[0].toUpperCase() + name.slice(1);
-          filters.hidden = true;
+          pageTitle.textContent = name[0].toUpperCase() + name.slice(1); filters.hidden = true;
         }
       }
 
-      navLinks.forEach(a => {
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          const view = a.getAttribute('data-view');
-          setActive(a);
-          showView(view);
-          history.pushState(null, '', '#' + view); 
-        });
-      });
+      navLinks.forEach(a => a.addEventListener('click', e => {
+        e.preventDefault();
+        const view = a.getAttribute('data-view');
+        setActive(a); showView(view); history.pushState(null, '', '#' + view);
+      }));
 
       const initial = (location.hash || '#dashboard').replace('#', '');
       const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
@@ -296,21 +208,34 @@
       window.addEventListener('popstate', () => {
         const v = (location.hash || '#dashboard').replace('#', '');
         const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
-        setActive(link);
-        showView(v in views ? v : 'dashboard');
+        setActive(link); showView(v in views ? v : 'dashboard');
       });
 
-      // Load applications data
+      /* -------- Dashboard KPIs -------- */
+      async function updateDashboardKPIs() {
+        try {
+          const response = await fetch("{% url 'myApplicationManager:get_applications_data' %}");
+          if (!response.ok) throw new Error("Failed to fetch applications");
+          const data = await response.json();
+
+          const submitted = Array.isArray(data.applications) ? data.applications.length : 0;
+          const submittedEl = document.getElementById("kpi-applications-submitted");
+          if (submittedEl) submittedEl.textContent = submitted;
+
+          const interviews = data.status_counts?.INTERVIEW || 0;
+          const interviewsEl = document.getElementById("kpi-interviews-booked");
+          if (interviewsEl) interviewsEl.textContent = interviews;
+        } catch (err) {
+          console.error("Failed to update dashboard KPIs:", err);
+        }
+      }
+
+      /* -------- Applications -------- */
       function loadApplicationsData() {
-        fetch('{% url "appsManager:get_applications_data" %}')
+        fetch('{% url "myApplicationManager:get_applications_data" %}')
           .then(response => response.json())
-          .then(data => {
-            displayApplicationsData(data);
-          })
-          .catch(error => {
-            console.error('Error loading applications:', error);
-            showApplicationsError();
-          });
+          .then(data => displayApplicationsData(data))
+          .catch(() => showApplicationsError());
       }
 
       function displayApplicationsData(data) {
@@ -318,351 +243,184 @@
         const listContainer = document.getElementById('applications-list');
         const noApplications = document.getElementById('no-applications');
 
-        // Display statistics
         statsContainer.innerHTML = `
-          <article class="card">
-            <h3>Applied</h3>
-            <div class="kpi">${data.status_counts.APPLIED || 0}</div>
-          </article>
-          <article class="card">
-            <h3>Interview</h3>
-            <div class="kpi">${data.status_counts.INTERVIEW || 0}</div>
-          </article>
-          <article class="card">
-            <h3>Accepted</h3>
-            <div class="kpi">${data.status_counts.ACCEPTED || 0}</div>
-          </article>
-          <article class="card">
-            <h3>Rejected</h3>
-            <div class="kpi">${data.status_counts.REJECTED || 0}</div>
-          </article>
+          <article class="card"><h3>Applied</h3><div class="kpi">${data.status_counts?.APPLIED || 0}</div></article>
+          <article class="card"><h3>Interview</h3><div class="kpi">${data.status_counts?.INTERVIEW || 0}</div></article>
+          <article class="card"><h3>Accepted</h3><div class="kpi">${data.status_counts?.ACCEPTED || 0}</div></article>
+          <article class="card"><h3>Rejected</h3><div class="kpi">${data.status_counts?.REJECTED || 0}</div></article>
         `;
 
-        // Display applications list
-        if (data.applications && data.applications.length > 0) {
+        if (Array.isArray(data.applications) && data.applications.length > 0) {
           noApplications.classList.add('hidden');
-          // Show the main add button when there are applications
-          const addBtn = document.getElementById('add-application-btn');
-          if (addBtn) addBtn.style.display = 'inline-flex';
-          listContainer.innerHTML = `
-            <div style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
-              <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                  <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">🏢 Company</th>
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">⭐ Stage</th>
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">👔 Position</th>
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">📅 Apply Date</th>
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">📅 Response Date</th>
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">🔗 Job URL</th>
-                    <th style="padding: 16px 20px; text-align: left; font-weight: 600; color: #6b7280; font-size: 0.875rem;">👥 Referral?</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${data.applications.map(app => `
-                    <tr style="border-bottom: 1px solid #f3f4f6;" data-application-id="${app.id}">
-                      <td style="padding: 16px 20px; font-weight: 600; color: #1f2937;">
-                        <span class="editable-field" data-field="company_name" data-value="${app.company_name}" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">${app.company_name}</span>
-                      </td>
-                      <td style="padding: 16px 20px;">
-                        <select style="padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 6px; background: white; font-size: 0.875rem; cursor: pointer;" 
-                                data-application-id="${app.id}"
-                                data-field="stage"
-                                onchange="updateApplicationField(this)">
-                          <option value="APPLIED" ${app.stage === 'APPLIED' ? 'selected' : ''}>Applied</option>
-                          <option value="INTERVIEW" ${app.stage === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
-                          <option value="ACCEPTED" ${app.stage === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
-                          <option value="REJECTED" ${app.stage === 'REJECTED' ? 'selected' : ''}>Rejected</option>
-                        </select>
-                      </td>
-                      <td style="padding: 16px 20px;">
-                        <span class="editable-field" data-field="position" data-value="${app.position}" style="cursor: pointer; padding: 6px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 500; background-color: #f3f4f6; color: #374151; display: inline-block; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'">${app.position}</span>
-                      </td>
-                      <td style="padding: 16px 20px; color: #6b7280; font-size: 0.875rem;">
-                        <span class="editable-field" data-field="apply_date" data-value="${app.apply_date}" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">${app.apply_date}</span>
-                      </td>
-                      <td style="padding: 16px 20px; color: #6b7280; font-size: 0.875rem;">
-                        <span class="editable-field" data-field="response_date" data-value="${app.response_date || ''}" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">${app.response_date || '-'}</span>
-                      </td>
-                      <td style="padding: 16px 20px;">
-                        <span class="editable-field" data-field="job_url" data-value="${app.job_url || ''}" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background-color 0.2s; color: #3b82f6; text-decoration: underline;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">${app.job_url ? (app.job_url.length > 20 ? app.job_url.substring(0, 20) + '...' : app.job_url) : '-'}</span>
-                      </td>
-                      <td style="padding: 16px 20px;">
-                        <span class="editable-field" data-field="is_referred" data-value="${app.is_referred}" style="cursor: pointer; padding: 6px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 500; ${app.is_referred ? 'background-color: #fef3c7; color: #d97706;' : 'background-color: #f3f4f6; color: #6b7280;'} display: inline-block; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=app.is_referred ? '#fde68a' : '#e5e7eb'" onmouseout="this.style.backgroundColor=app.is_referred ? '#fef3c7' : '#f3f4f6'">${app.is_referred ? 'Referred!' : 'No'}</span>
-                      </td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+          listContainer.innerHTML = data.applications.map(app => `
+            <div class="application-item" data-application-id="${app.id}">
+              <div class="application-info">
+                <h3 class="editable-field" data-field="company_name" data-value="${app.company_name}">${app.company_name}</h3>
+                <p class="editable-field" data-field="position" data-value="${app.position}">${app.position}</p>
+                <small>Applied: <span class="editable-field" data-field="apply_date" data-value="${app.apply_date || ''}">${app.apply_date || '-'}</span></small>
+              </div>
+              <div>
+                <select class="status-select status-${(app.stage || 'APPLIED').toLowerCase()}"
+                        data-application-id="${app.id}"
+                        onchange="updateApplicationStatus(this)">
+                  <option value="APPLIED" ${app.stage === 'APPLIED' ? 'selected' : ''}>Applied</option>
+                  <option value="INTERVIEW" ${app.stage === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
+                  <option value="ACCEPTED" ${app.stage === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
+                  <option value="REJECTED" ${app.stage === 'REJECTED' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </div>
             </div>
-          `;
+          `).join('');
         } else {
           listContainer.innerHTML = '';
           noApplications.classList.remove('hidden');
-          // Hide the main add button when there are no applications (use the "Add Your First Application" button instead)
-          const addBtn = document.getElementById('add-application-btn');
-          if (addBtn) addBtn.style.display = 'none';
         }
       }
 
       function showApplicationsError() {
-        const listContainer = document.getElementById('applications-list');
-        listContainer.innerHTML = '<div class="error">Error loading applications. Please try again.</div>';
+        document.getElementById('applications-list').innerHTML =
+          '<div class="error">Error loading applications. Please try again.</div>';
       }
 
-      function updateApplicationStatus(selectElement) {
+      window.updateApplicationStatus = function(selectElement) {
         const applicationId = selectElement.dataset.applicationId;
         const newStatus = selectElement.value;
-        
-        fetch('{% url "appsManager:update_application_status" %}', {
+
+        fetch('{% url "myApplicationManager:update_application_status" %}', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-          },
-          body: JSON.stringify({
-            application_id: applicationId,
-            status: newStatus
-          })
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+          body: JSON.stringify({ application_id: applicationId, status: newStatus })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
           if (data.success) {
             selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
-            showMessage('Status updated successfully!', 'success');
-            // Reload applications data to update statistics
-            loadApplicationsData();
+            loadApplicationsData(); updateDashboardKPIs();
           } else {
-            showMessage('Error updating status: ' + data.error, 'error');
-            selectElement.value = selectElement.dataset.originalValue;
+            alert('Error: ' + (data.error || 'Unable to update'));
           }
         })
-        .catch(error => {
-          console.error('Error:', error);
-          showMessage('Error updating status. Please try again.', 'error');
-          selectElement.value = selectElement.dataset.originalValue;
-        });
-      }
+        .catch(() => alert('Network error updating status.'));
+      };
 
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
+      // Optional: inline field editing (company/position/apply_date)
+      document.addEventListener('click', function(e) {
+        const el = e.target;
+        if (!el.classList.contains('editable-field')) return;
+
+        const field = el.dataset.field;
+        const currentValue = el.dataset.value || '';
+        const parent = el.closest('[data-application-id]');
+        if (!parent) return;
+        const applicationId = parent.dataset.applicationId;
+
+        const input = document.createElement('input');
+        input.type = (field === 'apply_date') ? 'date' : 'text';
+        input.value = currentValue;
+        input.style.padding = '4px 8px'; input.style.borderRadius = '4px';
+        input.style.border = '2px solid #3b82f6';
+        el.replaceWith(input);
+        input.focus(); input.select();
+
+        const save = () => {
+          const newValue = input.value.trim();
+          if (newValue === currentValue) { input.replaceWith(el); return; }
+          fetch('{% url "myApplicationManager:update_application_field" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+            body: JSON.stringify({ application_id: applicationId, field: field, value: newValue })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              loadApplicationsData(); updateDashboardKPIs();
+            } else {
+              alert('Error: ' + (data.error || 'Unable to update'));
+              input.replaceWith(el);
             }
-          }
-        }
-        return cookieValue;
-      }
+          })
+          .catch(() => { alert('Network error updating field.'); input.replaceWith(el); });
+        };
 
-      function showMessage(message, type) {
-        const messageDiv = document.createElement('div');
-        messageDiv.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          padding: 15px 20px;
-          border-radius: 6px;
-          color: white;
-          font-weight: bold;
-          z-index: 1000;
-          ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
-        `;
-        messageDiv.textContent = message;
-        document.body.appendChild(messageDiv);
-        
-        setTimeout(() => {
-          messageDiv.remove();
-        }, 3000);
-      }
-
-      // Add Application Form functionality
-      function initAddApplicationForm() {
-        const addBtn = document.getElementById('add-application-btn');
-        const addFirstBtn = document.getElementById('add-first-application-btn');
-        const formContainer = document.getElementById('add-application-form');
-        const cancelBtn = document.getElementById('cancel-add-btn');
-        const cancelFormBtn = document.getElementById('cancel-form-btn');
-        const form = document.getElementById('application-form');
-
-        function showForm() {
-          formContainer.classList.remove('hidden');
-          // Hide the main add button when form is shown
-          if (addBtn) addBtn.style.display = 'none';
-          // Set today's date as default for apply_date
-          const today = new Date().toISOString().split('T')[0];
-          form.querySelector('input[name="apply_date"]').value = today;
-        }
-
-        function hideForm() {
-          formContainer.classList.add('hidden');
-          form.reset();
-          // Show the main add button when form is hidden
-          if (addBtn) addBtn.style.display = 'inline-flex';
-        }
-
-        if (addBtn) addBtn.addEventListener('click', showForm);
-        if (addFirstBtn) addFirstBtn.addEventListener('click', showForm);
-        if (cancelBtn) cancelBtn.addEventListener('click', hideForm);
-        if (cancelFormBtn) cancelFormBtn.addEventListener('click', hideForm);
-
-        // Handle form submission
-        if (form) {
-          form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(form);
-            
-            fetch(form.action, {
-              method: 'POST',
-              body: formData,
-              headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-              }
-            })
-            .then(response => {
-              if (response.ok) {
-                showMessage('Application added successfully!', 'success');
-                hideForm();
-                loadApplicationsData(); // Refresh the applications list
-              } else {
-                showMessage('Error adding application. Please try again.', 'error');
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              showMessage('Error adding application. Please try again.', 'error');
-            });
-          });
-        }
-      }
-
-      // Initialize add application form when DOM is loaded
-      document.addEventListener('DOMContentLoaded', function() {
-        initAddApplicationForm();
-        initInlineEditing();
+        input.addEventListener('blur', save);
+        input.addEventListener('keypress', e => { if (e.key === 'Enter') save(); });
       });
 
-      // Inline editing functionality
-      function initInlineEditing() {
-        // Add click listeners to all editable fields
-        document.addEventListener('click', function(e) {
-          if (e.target.classList.contains('editable-field')) {
-            startEditing(e.target);
-          }
+      function getCSRFToken() {
+        const name = 'csrftoken';
+        const cookies = document.cookie.split(';').map(c => c.trim());
+        const cookie = cookies.find(c => c.startsWith(name + '='));
+        return cookie ? cookie.split('=')[1] : '';
+      }
+
+      /* -------- Jobs -------- */
+      function loadJobsData() {
+        fetch('{% url "myApplicationManager:get_jobs_to_apply" %}')
+          .then(response => response.json())
+          .then(data => displayJobsData(data.jobs || []))
+          .catch(() => {
+            document.getElementById('jobs-view').innerHTML =
+              '<div class="error">Error loading jobs. Please try again.</div>';
+          });
+      }
+
+      function displayJobsData(jobs) {
+        const container = document.getElementById('jobs-view');
+        if (!jobs.length) { container.innerHTML = '<p>No new jobs to view.</p>'; return; }
+
+        container.innerHTML = jobs.map(job => `
+          <div class="job-card">
+            <h3>${job.position} at ${job.companyName}</h3>
+            ${job.salary ? `<p><strong>Salary:</strong> ${job.salary}</p>` : ''}
+            ${job.jobDetails ? `<p>${job.jobDetails}</p>` : ''}
+            <button class="apply-btn" data-job-id="${job.jobID}">Apply</button>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.apply-btn').forEach(btn => {
+          btn.addEventListener('click', () => applyToJob(btn.dataset.jobId));
         });
       }
 
-      function startEditing(element) {
-        const field = element.dataset.field;
-        const currentValue = element.dataset.value;
-        const applicationId = element.closest('tr').dataset.applicationId;
-        
-        let input;
-        
-        if (field === 'is_referred') {
-          // Toggle boolean value
-          const newValue = currentValue === 'true' ? 'false' : 'true';
-          updateApplicationField({ dataset: { applicationId: applicationId, field: field }, value: newValue });
-          return;
-        } else if (field === 'apply_date' || field === 'response_date') {
-          // Date input
-          input = document.createElement('input');
-          input.type = 'date';
-          input.value = currentValue;
-        } else if (field === 'job_url') {
-          // URL input
-          input = document.createElement('input');
-          input.type = 'text';
-          input.value = currentValue;
-          input.placeholder = 'https://example.com/job-posting';
-        } else {
-          // Text input
-          input = document.createElement('input');
-          input.type = 'text';
-          input.value = currentValue;
-        }
-        
-        // Style the input
-        input.style.cssText = element.style.cssText + '; border: 2px solid #3b82f6; background: white;';
-        input.style.padding = '4px 8px';
-        input.style.borderRadius = '4px';
-        input.style.fontSize = '0.875rem';
-        
-        // Replace element with input
-        element.parentNode.replaceChild(input, element);
-        input.focus();
-        input.select();
-        
-        // Handle save on blur or enter
-        function saveEdit() {
-          const newValue = input.value.trim();
-          const originalValue = currentValue;
-          
-          if (newValue !== originalValue) {
-            updateApplicationField({ 
-              dataset: { applicationId: applicationId, field: field }, 
-              value: newValue 
-            });
-          } else {
-            // Restore original element if no change
-            restoreElement(element, originalValue, field);
-          }
-        }
-        
-        function restoreElement(originalElement, value, field) {
-          const newElement = originalElement.cloneNode(true);
-          newElement.dataset.value = value;
-          newElement.textContent = value || (field === 'response_date' ? '-' : '-');
-          input.parentNode.replaceChild(newElement, input);
-        }
-        
-        input.addEventListener('blur', saveEdit);
-        input.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            saveEdit();
-          } else if (e.key === 'Escape') {
-            restoreElement(element, currentValue, field);
-          }
-        });
-      }
-
-      function updateApplicationField(selectElement) {
-        const applicationId = selectElement.dataset.applicationId;
-        const field = selectElement.dataset.field;
-        const newValue = selectElement.value;
-        
-        fetch('{% url "appsManager:update_application_field" %}', {
+      window.applyToJob = function(jobID) {
+        fetch(`/apply-to-job/${jobID}/`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-          },
-          body: JSON.stringify({
-            application_id: applicationId,
-            field: field,
-            value: newValue
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+          body: JSON.stringify({ jobID })
+        })
+        .then(response => { if (!response.ok) throw new Error('Failed to apply.'); return response.json(); })
+        .then(() => { alert('Application submitted!'); loadJobsData(); loadApplicationsData(); updateDashboardKPIs(); })
+        .catch(err => alert(err.message));
+      };
+
+      /* -------- Profile -------- */
+      function loadProfileData() {
+        fetch('{% url "myApplicationManager:profile_detail_api" %}')
+          .then(response => response.json())
+          .then(data => {
+            const profile = data.profile || {};
+            document.getElementById('profile-container').innerHTML = `
+              <ul>
+                <li><strong>Email:</strong> ${profile.email || ''}</li>
+                <li><strong>First Name:</strong> ${profile.firstName || ''}</li>
+                <li><strong>Last Name:</strong> ${profile.lastName || ''}</li>
+                <li><strong>Phone:</strong> ${profile.phoneNumber || ''}</li>
+                <li><strong>Street:</strong> ${profile.street || ''}</li>
+                <li><strong>City:</strong> ${profile.city || ''}</li>
+                <li><strong>Province:</strong> ${profile.province || ''}</li>
+                <li><strong>Postal Code:</strong> ${profile.postalCode || ''}</li>
+              </ul>
+              <a href="{% url 'myApplicationManager:profile_edit' %}">Edit Profile</a>
+            `;
           })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            showMessage('Application updated successfully!', 'success');
-            loadApplicationsData(); // Refresh the applications list
-          } else {
-            showMessage('Error updating application: ' + data.error, 'error');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          showMessage('Error updating application. Please try again.', 'error');
-        });
+          .catch(() => {
+            document.getElementById('profile-container').innerHTML =
+              '<div class="error">Error loading profile. Please try again.</div>';
+          });
       }
     })();
-  </script>
+    </script>
+  </main>
+</div>
 </body>
 </html>

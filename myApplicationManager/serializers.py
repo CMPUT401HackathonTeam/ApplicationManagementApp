@@ -7,3 +7,21 @@ class JobApplicationSerializer(serializers.ModelSerializer):
         model = JobApplication
         fields = ['id', 'status', 'resumeID', 'jobID', 'profileID']
         read_only_fields = ['id', 'profileID']
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["email",
+        "firstName",
+        "lastName",
+        "phoneNumber",
+        "street",
+        "city",
+        "province",
+        "postalCode"]
+        
+
+class JobsToApplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobsToApply
+        fields = ['jobID', 'companyName', 'position', 'salary', 'jobDetails','appliedDate']
