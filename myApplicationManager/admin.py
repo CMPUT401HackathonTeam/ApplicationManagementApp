@@ -1,5 +1,5 @@
 from django.contrib import admin
-from.views import JobApplication, Resume, Profile, Skills, Education,JobsToApply
+from .models import JobApplication, Resume, Profile, Skills, Education, JobsToApply
 
 
 

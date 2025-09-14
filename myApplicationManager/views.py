@@ -54,7 +54,7 @@ class MyLogoutView(LogoutView):
 
 
 def homepage(request, userId):
-    return render(request, "homePage.html")
+    return render(request, "homePage.html", {'user_id': userId})
 
 
 def register(request):
@@ -179,12 +179,13 @@ def view_applications(request):
             'applications': applications,
             'status_counts': status_counts,
             'total_applications': applications.count(),
+            'user_id': request.user.id,
         }
         return render(request, 'applications.html', context)
 
     except Exception as e:
         messages.error(request, f"Error loading applications: {str(e)}")
-        return render(request, 'applications.html', {'applications': [], 'status_counts': {}, 'total_applications': 0})
+        return render(request, 'applications.html', {'applications': [], 'status_counts': {}, 'total_applications': 0, 'user_id': request.user.id})
 
 
 @login_required
@@ -202,7 +203,7 @@ def add_application(request):
     else:
         form = JobApplicationForm()
 
-    return render(request, 'add_application.html', {'form': form})
+    return render(request, 'add_application.html', {'form': form, 'user_id': request.user.id})
 
 
 @login_required
