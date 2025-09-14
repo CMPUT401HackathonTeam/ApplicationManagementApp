@@ -215,17 +215,21 @@ def get_applications_data(request):
         # Prepare applications data for JSON response
         applications_data = []
         for app in applications:
-            applications_data.append({
-                'id': app.id,
-                'company_name': app.company_name,
-                'position': app.position,
-                'stage': app.stage,
-                'stage_display': dict(JobApplication.StatusChoices)[app.stage],
-                'apply_date': app.apply_date.strftime('%Y-%m-%d'),
-                'response_date': app.response_date.strftime('%Y-%m-%d') if app.response_date else None,
-                'job_url': app.job_url,
-                'is_referred': app.is_referred,
-            })
+            try:
+                applications_data.append({
+                    'id': app.id,
+                    'company_name': app.company_name,
+                    'position': app.position,
+                    'stage': app.stage,
+                    'stage_display': dict(JobApplication.StatusChoices)[app.stage],
+                    'apply_date': app.apply_date.strftime('%Y-%m-%d') if app.apply_date else None,
+                    'response_date': app.response_date.strftime('%Y-%m-%d') if app.response_date else None,
+                    'job_url': app.job_url,
+                    'is_referred': app.is_referred,
+                })
+            except Exception as e:
+                print(f"Error processing app {app.id}: {str(e)}")
+                continue
         
         return JsonResponse({
             'applications': applications_data,
@@ -233,5 +237,77 @@ def get_applications_data(request):
             'total_applications': applications.count(),
         })
         
+    except Exception as e:
+        import traceback
+        print(f"Error in get_applications_data: {str(e)}")
+        print(traceback.format_exc())
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# Update application field
+@login_required
+@require_POST
+@csrf_exempt
+def update_application_field(request):
+    """Update a specific field of an application"""
+    try:
+        data = json.loads(request.body)
+        application_id = data.get('application_id')
+        field = data.get('field')
+        value = data.get('value')
+        
+        if not application_id or not field:
+            return JsonResponse({'error': 'Missing application_id or field'}, status=400)
+        
+        # Get the application
+        application = get_object_or_404(JobApplication, id=application_id)
+        
+        # Check if user owns this application
+        profile, created = Profile.objects.get_or_create(
+            email=request.user.email,
+            defaults={
+                'firstName': request.user.first_name or '',
+                'lastName': request.user.last_name or '',
+            }
+        )
+        
+        if application.profileID != profile:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+        # Update the specific field
+        if field == 'company_name':
+            application.company_name = value
+        elif field == 'position':
+            application.position = value
+        elif field == 'stage':
+            application.stage = value
+        elif field == 'apply_date':
+            from datetime import datetime
+            if value:
+                application.apply_date = datetime.strptime(value, '%Y-%m-%d').date()
+            else:
+                application.apply_date = None
+        elif field == 'response_date':
+            from datetime import datetime
+            if value:
+                application.response_date = datetime.strptime(value, '%Y-%m-%d').date()
+            else:
+                application.response_date = None
+        elif field == 'job_url':
+            application.job_url = value
+        elif field == 'is_referred':
+            application.is_referred = value.lower() == 'true'
+        else:
+            return JsonResponse({'error': 'Invalid field'}, status=400)
+        
+        application.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Application {field} updated successfully'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
