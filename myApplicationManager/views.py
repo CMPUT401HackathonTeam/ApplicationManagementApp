@@ -6,7 +6,7 @@ from requests.auth import HTTPBasicAuth
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import viewsets, permissions, status
 from .models import JobApplication, Profile, JobsToApply, Resume
-from .serializers import JobApplicationSerializer
+from .serializers import JobApplicationSerializer, ResumeSerializer
 from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -67,6 +67,55 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, "register.html", {"form": form})
+
+# Resume View
+@login_required
+def view_resumes(request):
+    """Render the Resumes page (templates/resumes.html)."""
+    return render(request, 'resumes.html')
+
+class ResumeViewSet(viewsets.ModelViewSet):
+    """
+    CRUD for Resume with nested children handled by ResumeSerializer.
+    - Only returns the current user's resumes.
+    - Creates with the current user's Profile.
+    - Enforces ownership on update/delete.
+    - Uses UUID 'resumeID' as the lookup field.
+    - Respects soft delete by filtering is_deleted=False and calling instance.delete().
+    """
+    serializer_class = ResumeSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'resumeID'
+
+    def _get_profile(self):
+        user = self.request.user
+        profile, _ = Profile.objects.get_or_create(
+            email=user.email,
+            defaults={
+                'firstName': getattr(user, 'first_name', '') or '',
+                'lastName': getattr(user, 'last_name', '') or '',
+            }
+        )
+        return profile
+
+    def get_queryset(self):
+        profile = self._get_profile()
+        # If your BaseModel has is_deleted, keep it hidden from normal queries
+        return Resume.objects.filter(userID=profile, is_deleted=False).order_by('-uploadDate')
+
+    def perform_create(self, serializer):
+        serializer.save(userID=self._get_profile())
+
+    def perform_update(self, serializer):
+        if serializer.instance.userID != self._get_profile():
+            raise PermissionDenied("You don't have permission to modify this resume.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.userID != self._get_profile():
+            raise PermissionDenied("You don't have permission to delete this resume.")
+        # Soft delete via your BaseModel.delete() override
+        instance.delete()
 
 
 # US 5.1: View all applications

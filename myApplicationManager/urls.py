@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import MyLoginView, register, homepage, view_applications, update_application_status, get_applications_data
+from .views import MyLoginView, ResumeViewSet, register, homepage, view_applications, update_application_status, get_applications_data, view_resumes
 
 app_name= 'myApplicationManager'
 urlpatterns = [
@@ -9,6 +9,9 @@ urlpatterns = [
     path('', MyLoginView.as_view(template_name='landingPage.html'), name='login'),
     path('register/', register, name='register'),
     path('home/', homepage, name='homepage'),
+
+    # Resume related URLs
+    path('resumes/', view_resumes, name='resumes_page'),
     
     # US 5.1 & 5.2: Applications functionality
     path('applications/', view_applications, name='view_applications'),
