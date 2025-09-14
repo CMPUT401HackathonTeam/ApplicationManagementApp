@@ -6,19 +6,20 @@ from requests.auth import HTTPBasicAuth
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import viewsets, permissions, status
 from .models import JobApplication, Profile, JobsToApply, Resume
-from .serializers import JobApplicationSerializer
+from .serializers import JobApplicationSerializer, ProfileSerializer
 from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User 
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseServerError, JsonResponse
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, authenticate,get_user_model
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -26,7 +27,11 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 import json
-
+from .forms import ProfileForm
+from .models import Profile, JobApplication, Resume, JobsToApply,Education, Skills
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib import messages
 
 class MyLoginView(LoginView):
     def form_valid(self, form):
@@ -34,7 +39,7 @@ class MyLoginView(LoginView):
         user = form.get_user()
         if not user:
             return redirect("myApplicationManager:register")
-        return redirect("myApplicationManager:homepage") 
+        return redirect("myApplicationManager:homepage", userId=user.id) 
     
     def form_invalid(self, form):
         username = self.request.POST.get('username')
@@ -51,8 +56,16 @@ class MyLoginView(LoginView):
         return super().form_invalid(form)
 
 
-def homepage(request):
-    return render(request, "homePage.html", {"user":request.user})
+class MyLogoutView(LogoutView):
+    next_page = reverse_lazy('myApplicationManager:login')
+
+    def dispatch(self, request):
+        messages.success(request, "You have been successfully logged out.")
+        return super().dispatch(request)
+
+
+def homepage(request, userId):
+    return render(request, "homePage.html")
     
 
 def register(request):
@@ -61,13 +74,54 @@ def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()     
-            login(request, user)        
-            return redirect("myApplicationManager:homepage")      
+            try:
+                newUser = form.save()     
+            except Exception as e:
+                print(e)
+            try:
+                newProfile = Profile(user=newUser)    
+                print(newProfile.firstName)
+                newProfile.save()
+                login(request, newUser) 
+            except Exception as e:
+                print(e)    
+            
+            return render(request, "createProfile.html")      
     else:
         form = UserCreationForm()
     return render(request, "register.html", {"form": form})
 
+@login_required
+def createProfile(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if request.method == "POST":
+        profile.email = request.POST.get("email", "")
+        profile.firstName = request.POST.get("firstName", "")
+        profile.lastName = request.POST.get("lastName", "")
+        profile.phoneNumber = request.POST.get("phoneNumber", "")
+        profile.address = request.POST.get("address", "")
+        profile.city = request.POST.get("city", "")
+        profile.province = request.POST.get("province", "")
+        profile.postalCode = request.POST.get("postalCode", "")
+        
+        profile.save()
+        return redirect("myApplicationManager:homepage", userId=profile.user.id)
+    
+    return redirect("myApplicationManager:homepage") 
+  
+@api_view(['GET','PUT'])
+def profile_detail_api(request):
+    '''
+    API endpoint to retrieve profile details
+    only intended for front end to fetch a current user's profile from a request
+    '''
+    profile = get_object_or_404(Profile, user=request.user)
+    serializer = ProfileSerializer(profile)
+    print(serializer.data)
+    return Response({"profile":serializer.data}, status=200)
+        
+    
 
 # US 5.1: View all applications
 @login_required
@@ -202,3 +256,57 @@ def get_applications_data(request):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+@login_required
+def profile_detail(request):
+    """Show the logged-in user's profile"""
+    profile, created = Profile.objects.get_or_create(
+        user=request.user
+    )
+    return render(request, "homePage.html", {"profile": profile})
+
+
+
+@login_required
+def profile_edit(request):
+    """Edit the logged-in user's profile"""
+    profile, created = Profile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'firstName': request.user.first_name or '',
+            'lastName': request.user.last_name or '',
+        }
+    )
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect("myApplicationManager:profile_detail")
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, "profile_edit.html", {"form": form})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def profile_edit_api(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    data = request.data
+
+    profile.firstName = data.get('firstName', profile.firstName)
+    profile.lastName = data.get('lastName', profile.lastName)
+    profile.email = data.get('email', profile.email)
+    profile.phoneNumber = data.get('phoneNumber', profile.phoneNumber)
+    profile.street = data.get('street', profile.street)
+    profile.city = data.get('city', profile.city)
+    profile.province = data.get('province', profile.province)
+    profile.postalCode = data.get('postalCode', profile.postalCode)
+
+    try:
+        profile.save()
+        return Response({"success": True, "message": "Profile updated successfully!"})
+    except Exception as e:
+        return Response({"success": False, "error": str(e)}, status=400)
