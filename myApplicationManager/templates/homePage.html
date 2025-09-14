@@ -9,126 +9,58 @@
   <style>
     .applications-container { padding: 20px; }
     .application-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px;
-      margin: 10px 0;
-      background: white;
-      border-radius: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px; margin: 10px 0; background: white; border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .application-info h3 { margin: 0 0 5px 0; color: #1f2937; }
     .application-info p { margin: 0; color: #6b7280; font-size: 14px; }
     .application-info small { color: #9ca3af; font-size: 12px; }
     .status-select {
-      padding: 8px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      background: white;
-      cursor: pointer;
-      font-size: 14px;
+      padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+      background: white; cursor: pointer; font-size: 14px;
     }
     .status-applied { background-color: #dbeafe; color: #1e40af; }
     .status-interview { background-color: #fef3c7; color: #92400e; }
     .status-accepted { background-color: #d1fae5; color: #065f46; }
     .status-rejected { background-color: #fee2e2; color: #991b1b; }
     .no-applications {
-      text-align: center;
-      padding: 40px;
-      color: #6b7280;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center; padding: 40px; color: #6b7280; background: white;
+      border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .applications-list { margin-top: 20px; }
+    .hidden { display: none !important; }
+
     .logout-button {
-      text-decoration: none;
-      color: #1e40af;
-      font-weight: 600;
-      padding: 0.5em 1em;
-      border-radius: 0.5em;
-      background: transparent;
-      border: none;
-      cursor: pointer;
+      text-decoration: none; color: #1e40af; font-weight: 600;
+      padding: 0.5em 1em; border-radius: 0.5em; background: transparent;
+      border: none; cursor: pointer;
     }
 
-    /* -------- Jobs Styling -------- */
+    /* Jobs */
     .job-card {
-      display: flex;
-      flex-direction: column;
-      padding: 15px;
-      margin: 10px 0;
-      background: #f9fafb;
-      border-radius: 12px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; padding: 15px; margin: 10px 0;
+      background: #f9fafb; border-radius: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.1);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
-    .job-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-
-    .job-card h3 {
-      margin: 0 0 8px 0;
-      color: #1f2937;
-      font-size: 18px;
-    }
-
-    .job-card p {
-      margin: 4px 0;
-      color: #4b5563;
-      font-size: 14px;
-    }
-
+    .job-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .job-card h3 { margin: 0 0 8px 0; color: #1f2937; font-size: 18px; }
+    .job-card p { margin: 4px 0; color: #4b5563; font-size: 14px; }
     .job-card button.apply-btn {
-      margin-top: 10px;
-      padding: 0.5em 1em;
-      background: #1e40af;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
+      margin-top: 10px; padding: 0.5em 1em; background: #1e40af; color: white;
+      border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
       transition: background 0.2s ease;
     }
+    .job-card button.apply-btn:hover { background: #2563eb; }
 
-    .job-card button.apply-btn:hover {
-      background: #2563eb;
-    }
-
-    /* -------- Profile Styling -------- */
-    .profile-container-full {
-      padding: 20px;
-      background: transparent;
-      max-width: none;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    #profile-container ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.6;
-      color: #1e3a8a;
-    }
-
+    /* Profile */
+    .profile-container-full { padding: 20px; background: transparent; width: 100%; margin: 0 auto; }
+    #profile-container ul { list-style: none; padding: 0; margin: 0; font-size: 16px; line-height: 1.6; color: #1e3a8a; }
     #profile-container li { margin-bottom: 10px; }
-
     #profile-container a {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 0.5em 1em;
-      background: #1e40af;
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
+      display: inline-block; margin-top: 15px; padding: 0.5em 1em; background: #1e40af;
+      color: white; border-radius: 8px; text-decoration: none; font-weight: 600;
     }
-
     #profile-container a:hover { background: #2563eb; }
   </style>
 </head>
@@ -138,12 +70,8 @@
     <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
     <div class="profile">
       <a href="#profile" data-view="profile" style="text-decoration:none; color:inherit;">
-        <div class="avatar" aria-hidden="true">
-          <div class="placeholder">P</div>
-        </div>
-        <div class="meta">
-          <div class="name">Profile</div>
-        </div>
+        <div class="avatar" aria-hidden="true"><div class="placeholder">P</div></div>
+        <div class="meta"><div class="name">Profile</div></div>
       </a>
     </div>
     <nav class="nav" aria-label="Primary">
@@ -166,21 +94,13 @@
     <div class="topbar">
       <div class="title" id="page-title">Overview</div>
       <div class="filters" id="filters" hidden>
-        <select id="filter-scope" aria-label="Scope">
-          <option value="all" selected>All</option>
-        </select>
-        <select id="filter-read" aria-label="Read Status">
-          <option value="unread">Unread</option>
-          <option value="read">Read</option>
-        </select>
-        <select id="filter-sort" aria-label="Sort">
-          <option value="newest" selected>Newest</option>
-          <option value="oldest">Oldest</option>
-        </select>
+        <select id="filter-scope" aria-label="Scope"><option value="all" selected>All</option></select>
+        <select id="filter-read" aria-label="Read Status"><option value="unread">Unread</option><option value="read">Read</option></select>
+        <select id="filter-sort" aria-label="Sort"><option value="newest" selected>Newest</option><option value="oldest">Oldest</option></select>
       </div>
     </div>
 
-    <!-- Views -->
+    <!-- Dashboard -->
     <section id="dashboard-view" class="view">
       <section class="stats-grid" aria-label="Stats">
         <article class="card" tabindex="0">
@@ -205,255 +125,302 @@
       </section>
     </section>
 
-
+    <!-- Inbox -->
     <section id="inbox-view" class="view hidden" aria-label="Inbox">
       <ul class="inbox-list"></ul>
     </section>
 
+    <!-- Applications -->
     <section id="applications-view" class="view hidden">
       <div class="applications-container">
         <h2>My Applications</h2>
         <div id="applications-stats" class="stats-grid"></div>
         <div id="applications-list" class="applications-list"></div>
-        <div id="no-applications" >
+        <div id="no-applications" class="no-applications hidden">
+          <h3>No Applications Yet</h3>
+          <p>You haven't submitted any job applications yet. Start by adding your first application!</p>
+          <a href="{% url 'myApplicationManager:add_application' %}" style="background-color:#3b82f6;color:white;padding:12px 24px;border-radius:8px;display:inline-block;font-weight:600;text-decoration:none;">Add Your First Application</a>
         </div>
       </div>
     </section>
 
+    <!-- Jobs -->
     <section id="jobs-view" class="view hidden"></section>
+
+    <!-- Resume (placeholder) -->
     <section id="resume-view" class="view hidden"></section>
 
+    <!-- Profile -->
     <section id="profile-view" class="view hidden">
       <div class="profile-container-full">
         <h2>My Profile</h2>
-        <div id="profile-container">
-          <p>Loading profile...</p>
-        </div>
+        <div id="profile-container"><p>Loading profile...</p></div>
       </div>
     </section>
 
-<script>
-(function () {
-  const navLinks = document.querySelectorAll('.nav a[data-view], .profile a[data-view]');
-  const views = {
-    dashboard: document.getElementById('dashboard-view'),
-    inbox: document.getElementById('inbox-view'),
-    applications: document.getElementById('applications-view'),
-    jobs: document.getElementById('jobs-view'),
-    resume: document.getElementById('resume-view'),
-    profile: document.getElementById('profile-view')
-  };
-  const pageTitle = document.getElementById('page-title');
-  const filters = document.getElementById('filters');
+    <script>
+    (function () {
+      const navLinks = document.querySelectorAll('.nav a[data-view], .profile a[data-view]');
+      const views = {
+        dashboard: document.getElementById('dashboard-view'),
+        inbox: document.getElementById('inbox-view'),
+        applications: document.getElementById('applications-view'),
+        jobs: document.getElementById('jobs-view'),
+        resume: document.getElementById('resume-view'),
+        profile: document.getElementById('profile-view')
+      };
+      const pageTitle = document.getElementById('page-title');
+      const filters = document.getElementById('filters');
 
-  function setActive(link) {
-    navLinks.forEach(a => a.classList.remove('active'));
-    if (link) link.classList.add('active');
-  }
+      function setActive(link) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        if (link) link.classList.add('active');
+      }
 
-  function showView(name) {
-    Object.entries(views).forEach(([k, el]) => el && el.classList.toggle('hidden', k !== name));
-    if (name === 'inbox') {
-      pageTitle.textContent = 'Inbox'; filters.hidden = false;
-    } else if (name === 'applications') {
-      pageTitle.textContent = 'Applications'; filters.hidden = true; loadApplicationsData();
-    } else if (name === 'jobs') {
-      pageTitle.textContent = 'Jobs'; filters.hidden = true; loadJobsData();
-    } else if (name === 'profile') {
-      pageTitle.textContent = 'Profile'; filters.hidden = true; loadProfileData();
-    } else if (name === 'dashboard') {
-      pageTitle.textContent = 'Overview'; filters.hidden = true; updateDashboardKPIs();
-    } else {
-      pageTitle.textContent = name[0].toUpperCase() + name.slice(1);
-      filters.hidden = true;
-    }
-  }
+      function showView(name) {
+        Object.entries(views).forEach(([k, el]) => el && el.classList.toggle('hidden', k !== name));
+        if (name === 'inbox') {
+          pageTitle.textContent = 'Inbox'; filters.hidden = false;
+        } else if (name === 'applications') {
+          pageTitle.textContent = 'Applications'; filters.hidden = true; loadApplicationsData();
+        } else if (name === 'jobs') {
+          pageTitle.textContent = 'Jobs'; filters.hidden = true; loadJobsData();
+        } else if (name === 'profile') {
+          pageTitle.textContent = 'Profile'; filters.hidden = true; loadProfileData();
+        } else if (name === 'dashboard') {
+          pageTitle.textContent = 'Overview'; filters.hidden = true; updateDashboardKPIs();
+        } else {
+          pageTitle.textContent = name[0].toUpperCase() + name.slice(1); filters.hidden = true;
+        }
+      }
 
-  navLinks.forEach(a => a.addEventListener('click', e => {
-    e.preventDefault();
-    const view = a.getAttribute('data-view');
-    setActive(a); showView(view); history.pushState(null, '', '#' + view);
-  }));
+      navLinks.forEach(a => a.addEventListener('click', e => {
+        e.preventDefault();
+        const view = a.getAttribute('data-view');
+        setActive(a); showView(view); history.pushState(null, '', '#' + view);
+      }));
 
-  const initial = (location.hash || '#dashboard').replace('#', '');
-  const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
-  setActive(initialLink || document.querySelector('.nav a[data-view="dashboard"]'));
-  showView(initial in views ? initial : 'dashboard');
+      const initial = (location.hash || '#dashboard').replace('#', '');
+      const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
+      setActive(initialLink || document.querySelector('.nav a[data-view="dashboard"]'));
+      showView(initial in views ? initial : 'dashboard');
 
-  window.addEventListener('popstate', () => {
-    const v = (location.hash || '#dashboard').replace('#', '');
-    const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
-    setActive(link); showView(v in views ? v : 'dashboard');
-  });
-
-  /* -------- Dashboard KPIs -------- */
-async function updateDashboardKPIs() {
-  try {
-    const response = await fetch("{% url 'myApplicationManager:get_applications_data' %}");
-    if (!response.ok) throw new Error("Failed to fetch applications");
-
-    const data = await response.json();
-
-    // Applications Submitted = total applications
-    const submitted = Array.isArray(data.applications) ? data.applications.length : 0;
-    const submittedEl = document.getElementById("kpi-applications-submitted");
-    if (submittedEl) submittedEl.textContent = submitted;
-
-    // Interviews Booked = INTERVIEW status count
-    const interviews = data.status_counts?.INTERVIEW || 0;
-    const interviewsEl = document.getElementById("kpi-interviews-booked");
-    if (interviewsEl) interviewsEl.textContent = interviews;
-
-    // Leave Current Openings + Inbox unchanged for now
-  } catch (err) {
-    console.error("Failed to update dashboard KPIs:", err);
-  }
-}
-
-
-  /* -------- Applications -------- */
-  function loadApplicationsData() {
-    fetch('{% url "myApplicationManager:get_applications_data" %}')
-      .then(response => response.json())
-      .then(data => displayApplicationsData(data))
-      .catch(() => showApplicationsError());
-  }
-
-  function displayApplicationsData(data) {
-    const statsContainer = document.getElementById('applications-stats');
-    const listContainer = document.getElementById('applications-list');
-    const noApplications = document.getElementById('no-applications');
-
-    // Update stats
-    statsContainer.innerHTML = `
-      <article class="card"><h3>Applied</h3><div class="kpi">${data.status_counts?.APPLIED || 0}</div></article>
-      <article class="card"><h3>Interview</h3><div class="kpi">${data.status_counts?.INTERVIEW || 0}</div></article>
-      <article class="card"><h3>Accepted</h3><div class="kpi">${data.status_counts?.ACCEPTED || 0}</div></article>
-      <article class="card"><h3>Rejected</h3><div class="kpi">${data.status_counts?.REJECTED || 0}</div></article>
-    `;
-
-    if (Array.isArray(data.applications) && data.applications.length > 0) {
-      noApplications.classList.add('hidden');
-      listContainer.innerHTML = data.applications.map(app => `
-        <div class="application-item">
-          <div class="application-info">
-            <h3>${app.company_name}</h3>
-            <p>${app.position}</p>
-            <small>Applied: ${app.applied_date}</small>
-          </div>
-          <div>
-            <select class="status-select status-${app.status.toLowerCase()}"
-                    data-application-id="${app.id}"
-                    onchange="updateApplicationStatus(this)">
-              <option value="APPLIED" ${app.status === 'APPLIED' ? 'selected' : ''}>Applied</option>
-              <option value="INTERVIEW" ${app.status === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
-              <option value="ACCEPTED" ${app.status === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
-              <option value="REJECTED" ${app.status === 'REJECTED' ? 'selected' : ''}>Rejected</option>
-            </select>
-          </div>
-        </div>
-      `).join('');
-    } else {
-      listContainer.innerHTML = '';
-      noApplications.classList.remove('hidden');
-    }
-  }
-
-  function showApplicationsError() {
-    document.getElementById('applications-list').innerHTML =
-      '<div class="error">Error loading applications. Please try again.</div>';
-  }
-
-  /* -------- Jobs -------- */
-  function loadJobsData() {
-    fetch('{% url "myApplicationManager:get_jobs_to_apply" %}')
-      .then(response => response.json())
-      .then(data => displayJobsData(data.jobs))
-      .catch(() => {
-        document.getElementById('jobs-view').innerHTML =
-          '<div class="error">Error loading jobs. Please try again.</div>';
+      window.addEventListener('popstate', () => {
+        const v = (location.hash || '#dashboard').replace('#', '');
+        const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
+        setActive(link); showView(v in views ? v : 'dashboard');
       });
-  }
 
-  function displayJobsData(jobs) {
-    const container = document.getElementById('jobs-view');
-    if (!jobs.length) {
-      container.innerHTML = '<p>No new jobs to view.</p>';
-      return;
-    }
+      /* -------- Dashboard KPIs -------- */
+      async function updateDashboardKPIs() {
+        try {
+          const response = await fetch("{% url 'myApplicationManager:get_applications_data' %}");
+          if (!response.ok) throw new Error("Failed to fetch applications");
+          const data = await response.json();
 
-    container.innerHTML = jobs.map(job => `
-      <div class="job-card">
-        <h3>${job.position} at ${job.companyName}</h3>
-        ${job.salary ? `<p><strong>Salary:</strong> ${job.salary}</p>` : ''}
-        ${job.jobDetails ? `<p>${job.jobDetails}</p>` : ''}
-        <button class="apply-btn" data-job-id="${job.jobID}">Apply</button>
-      </div>
-    `).join('');
+          const submitted = Array.isArray(data.applications) ? data.applications.length : 0;
+          const submittedEl = document.getElementById("kpi-applications-submitted");
+          if (submittedEl) submittedEl.textContent = submitted;
 
-    container.querySelectorAll('.apply-btn').forEach(btn => {
-      btn.addEventListener('click', () => applyToJob(btn.dataset.jobId));
-    });
-  }
+          const interviews = data.status_counts?.INTERVIEW || 0;
+          const interviewsEl = document.getElementById("kpi-interviews-booked");
+          if (interviewsEl) interviewsEl.textContent = interviews;
+        } catch (err) {
+          console.error("Failed to update dashboard KPIs:", err);
+        }
+      }
 
-  window.applyToJob = function(jobID) {
-    fetch(`/apply-to-job/${jobID}/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCSRFToken()
-      },
-      body: JSON.stringify({ jobID })
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Failed to apply.');
-      return response.json();
-    })
-    .then(() => {
-      alert('Application submitted!');
-      loadJobsData();
-      loadApplicationsData();
-      updateDashboardKPIs();
-    })
-    .catch(err => alert(err.message));
-  }
+      /* -------- Applications -------- */
+      function loadApplicationsData() {
+        fetch('{% url "myApplicationManager:get_applications_data" %}')
+          .then(response => response.json())
+          .then(data => displayApplicationsData(data))
+          .catch(() => showApplicationsError());
+      }
 
-  function getCSRFToken() {
-    const name = 'csrftoken';
-    const cookies = document.cookie.split(';').map(c => c.trim());
-    const cookie = cookies.find(c => c.startsWith(name + '='));
-    return cookie ? cookie.split('=')[1] : '';
-  }
+      function displayApplicationsData(data) {
+        const statsContainer = document.getElementById('applications-stats');
+        const listContainer = document.getElementById('applications-list');
+        const noApplications = document.getElementById('no-applications');
 
-  /* -------- Profile -------- */
-  function loadProfileData() {
-    fetch('{% url "myApplicationManager:profile_detail_api" %}')
-      .then(response => response.json())
-      .then(data => {
-        const profile = data.profile;
-        document.getElementById('profile-container').innerHTML = `
-          <ul>
-            <li><strong>Email:</strong> ${profile.email}</li>
-            <li><strong>First Name:</strong> ${profile.firstName}</li>
-            <li><strong>Last Name:</strong> ${profile.lastName}</li>
-            <li><strong>Phone:</strong> ${profile.phoneNumber}</li>
-            <li><strong>Street:</strong> ${profile.street}</li>
-            <li><strong>City:</strong> ${profile.city}</li>
-            <li><strong>Province:</strong> ${profile.province}</li>
-            <li><strong>Postal Code:</strong> ${profile.postalCode}</li>
-          </ul>
-          <a href="{% url 'myApplicationManager:profile_edit' %}">Edit Profile</a>
+        statsContainer.innerHTML = `
+          <article class="card"><h3>Applied</h3><div class="kpi">${data.status_counts?.APPLIED || 0}</div></article>
+          <article class="card"><h3>Interview</h3><div class="kpi">${data.status_counts?.INTERVIEW || 0}</div></article>
+          <article class="card"><h3>Accepted</h3><div class="kpi">${data.status_counts?.ACCEPTED || 0}</div></article>
+          <article class="card"><h3>Rejected</h3><div class="kpi">${data.status_counts?.REJECTED || 0}</div></article>
         `;
-      })
-      .catch(() => {
-        document.getElementById('profile-container').innerHTML =
-          '<div class="error">Error loading profile. Please try again.</div>';
+
+        if (Array.isArray(data.applications) && data.applications.length > 0) {
+          noApplications.classList.add('hidden');
+          listContainer.innerHTML = data.applications.map(app => `
+            <div class="application-item" data-application-id="${app.id}">
+              <div class="application-info">
+                <h3 class="editable-field" data-field="company_name" data-value="${app.company_name}">${app.company_name}</h3>
+                <p class="editable-field" data-field="position" data-value="${app.position}">${app.position}</p>
+                <small>Applied: <span class="editable-field" data-field="apply_date" data-value="${app.apply_date || ''}">${app.apply_date || '-'}</span></small>
+              </div>
+              <div>
+                <select class="status-select status-${(app.stage || 'APPLIED').toLowerCase()}"
+                        data-application-id="${app.id}"
+                        onchange="updateApplicationStatus(this)">
+                  <option value="APPLIED" ${app.stage === 'APPLIED' ? 'selected' : ''}>Applied</option>
+                  <option value="INTERVIEW" ${app.stage === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
+                  <option value="ACCEPTED" ${app.stage === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
+                  <option value="REJECTED" ${app.stage === 'REJECTED' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          listContainer.innerHTML = '';
+          noApplications.classList.remove('hidden');
+        }
+      }
+
+      function showApplicationsError() {
+        document.getElementById('applications-list').innerHTML =
+          '<div class="error">Error loading applications. Please try again.</div>';
+      }
+
+      window.updateApplicationStatus = function(selectElement) {
+        const applicationId = selectElement.dataset.applicationId;
+        const newStatus = selectElement.value;
+
+        fetch('{% url "myApplicationManager:update_application_status" %}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+          body: JSON.stringify({ application_id: applicationId, status: newStatus })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
+            loadApplicationsData(); updateDashboardKPIs();
+          } else {
+            alert('Error: ' + (data.error || 'Unable to update'));
+          }
+        })
+        .catch(() => alert('Network error updating status.'));
+      };
+
+      // Optional: inline field editing (company/position/apply_date)
+      document.addEventListener('click', function(e) {
+        const el = e.target;
+        if (!el.classList.contains('editable-field')) return;
+
+        const field = el.dataset.field;
+        const currentValue = el.dataset.value || '';
+        const parent = el.closest('[data-application-id]');
+        if (!parent) return;
+        const applicationId = parent.dataset.applicationId;
+
+        const input = document.createElement('input');
+        input.type = (field === 'apply_date') ? 'date' : 'text';
+        input.value = currentValue;
+        input.style.padding = '4px 8px'; input.style.borderRadius = '4px';
+        input.style.border = '2px solid #3b82f6';
+        el.replaceWith(input);
+        input.focus(); input.select();
+
+        const save = () => {
+          const newValue = input.value.trim();
+          if (newValue === currentValue) { input.replaceWith(el); return; }
+          fetch('{% url "myApplicationManager:update_application_field" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+            body: JSON.stringify({ application_id: applicationId, field: field, value: newValue })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              loadApplicationsData(); updateDashboardKPIs();
+            } else {
+              alert('Error: ' + (data.error || 'Unable to update'));
+              input.replaceWith(el);
+            }
+          })
+          .catch(() => { alert('Network error updating field.'); input.replaceWith(el); });
+        };
+
+        input.addEventListener('blur', save);
+        input.addEventListener('keypress', e => { if (e.key === 'Enter') save(); });
       });
-  }
-})();
 
+      function getCSRFToken() {
+        const name = 'csrftoken';
+        const cookies = document.cookie.split(';').map(c => c.trim());
+        const cookie = cookies.find(c => c.startsWith(name + '='));
+        return cookie ? cookie.split('=')[1] : '';
+      }
 
-</script>
+      /* -------- Jobs -------- */
+      function loadJobsData() {
+        fetch('{% url "myApplicationManager:get_jobs_to_apply" %}')
+          .then(response => response.json())
+          .then(data => displayJobsData(data.jobs || []))
+          .catch(() => {
+            document.getElementById('jobs-view').innerHTML =
+              '<div class="error">Error loading jobs. Please try again.</div>';
+          });
+      }
 
+      function displayJobsData(jobs) {
+        const container = document.getElementById('jobs-view');
+        if (!jobs.length) { container.innerHTML = '<p>No new jobs to view.</p>'; return; }
+
+        container.innerHTML = jobs.map(job => `
+          <div class="job-card">
+            <h3>${job.position} at ${job.companyName}</h3>
+            ${job.salary ? `<p><strong>Salary:</strong> ${job.salary}</p>` : ''}
+            ${job.jobDetails ? `<p>${job.jobDetails}</p>` : ''}
+            <button class="apply-btn" data-job-id="${job.jobID}">Apply</button>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.apply-btn').forEach(btn => {
+          btn.addEventListener('click', () => applyToJob(btn.dataset.jobId));
+        });
+      }
+
+      window.applyToJob = function(jobID) {
+        fetch(`/apply-to-job/${jobID}/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+          body: JSON.stringify({ jobID })
+        })
+        .then(response => { if (!response.ok) throw new Error('Failed to apply.'); return response.json(); })
+        .then(() => { alert('Application submitted!'); loadJobsData(); loadApplicationsData(); updateDashboardKPIs(); })
+        .catch(err => alert(err.message));
+      };
+
+      /* -------- Profile -------- */
+      function loadProfileData() {
+        fetch('{% url "myApplicationManager:profile_detail_api" %}')
+          .then(response => response.json())
+          .then(data => {
+            const profile = data.profile || {};
+            document.getElementById('profile-container').innerHTML = `
+              <ul>
+                <li><strong>Email:</strong> ${profile.email || ''}</li>
+                <li><strong>First Name:</strong> ${profile.firstName || ''}</li>
+                <li><strong>Last Name:</strong> ${profile.lastName || ''}</li>
+                <li><strong>Phone:</strong> ${profile.phoneNumber || ''}</li>
+                <li><strong>Street:</strong> ${profile.street || ''}</li>
+                <li><strong>City:</strong> ${profile.city || ''}</li>
+                <li><strong>Province:</strong> ${profile.province || ''}</li>
+                <li><strong>Postal Code:</strong> ${profile.postalCode || ''}</li>
+              </ul>
+              <a href="{% url 'myApplicationManager:profile_edit' %}">Edit Profile</a>
+            `;
+          })
+          .catch(() => {
+            document.getElementById('profile-container').innerHTML =
+              '<div class="error">Error loading profile. Please try again.</div>';
+          });
+      }
+    })();
+    </script>
+  </main>
+</div>
 </body>
 </html>

@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User
-from django.db import models
 from django.db.models import QuerySet, Manager
-from datetime import datetime
+from datetime import datetime, date
 import pytz
 import uuid
 
@@ -45,6 +44,40 @@ class BaseModel(models.Model):
         self.save()
         
         
+
+class JobApplication(BaseModel):
+    '''A class representing a job application on the website
+       Each Job Application is Associated with a specific user
+       FIELDS:
+        - Company Name
+        - Company Website (optional)
+        - Position Name
+        - Position Details (optional)
+        - Status
+        - Apply Date
+        - Response Date
+        - Job URL
+        - Referral Status
+    
+    '''
+    StatusChoices=[
+        ('APPLIED', 'Applied'),
+        ('INTERVIEW', 'Interview'),
+        ('ACCEPTED', 'Accepted'),
+        ('REJECTED', 'Rejected'),
+    ]
+    company_name = models.CharField(max_length=200, default='')
+    position = models.CharField(max_length=200, default='')
+    stage = models.CharField(max_length=20, choices=StatusChoices, default='APPLIED')
+    apply_date = models.DateField(default=date.today, null=True, blank=True)
+    response_date = models.DateField(null=True, blank=True)
+    job_url = models.CharField(max_length=500, blank=True)
+    is_referred = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+    resumeID = models.ForeignKey('Resume', on_delete=models.CASCADE, null=True, blank=True)
+    profileID = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 
 class Profile(BaseModel):
@@ -109,30 +142,6 @@ class Resume(BaseModel):
     name = models.TextField(default="")
     userID = models.ForeignKey(Profile, on_delete=models.CASCADE)
     uploadDate = models.DateTimeField(default=get_mst_time)
-
-class JobApplication(BaseModel):
-    '''A class representing a job application on the website
-       Each Job Application is Associated with a specific user
-       FIELDS:
-        - Company Name
-        - Company Website (optional)
-        - Position Name
-        - Position Details (optional)
-        - Status
-    
-    '''
-    StatusChoices=[
-        ('ACCEPTED', 'accepted'),
-        ('REJECTED', 'rejected'),
-        ('APPLIED', 'applied'),
-        ('INTERVIEW', 'interview'),
-    ]
-    objects = AppManager()
-    all_objects = models.Manager()
-    status = models.CharField(max_length=20, choices=StatusChoices, default='APPLIED')
-    resumeID = models.ForeignKey(Resume, on_delete=models.CASCADE, null=True)
-    jobID = models.ForeignKey(JobsToApply, on_delete=models.CASCADE, null=True)
-    profileID = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
 
 class Education(BaseModel):
     """Stores a single education entry for a resume"""

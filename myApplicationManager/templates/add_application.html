@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Application - Job Portal</title>
+    <link rel="stylesheet" href="{% static 'homepage.css' %}">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-check-input {
+            margin-right: 8px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .error-messages {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar">
+            <div class="brand">
+                <div class="dot"></div>
+                <span>Job Tracker</span>
+            </div>
+            <nav>
+                <a href="{% url 'appsManager:homepage' %}" class="nav-item">
+                    <span>🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'appsManager:view_applications' %}" class="nav-item active">
+                    <span>📋</span>
+                    <span>Applications</span>
+                </a>
+            </nav>
+        </div>
+        
+        <div class="main">
+            <div class="form-container">
+                <div class="header">
+                    <h1>Add New Application</h1>
+                    <a href="{% url 'appsManager:view_applications' %}" class="btn btn-secondary">← Back to Applications</a>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.company_name.id_for_label }}">Company Name *</label>
+                        {{ form.company_name }}
+                        {% if form.company_name.errors %}
+                            <div class="error-messages">{{ form.company_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.position.id_for_label }}">Position *</label>
+                        {{ form.position }}
+                        {% if form.position.errors %}
+                            <div class="error-messages">{{ form.position.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.stage.id_for_label }}">Stage *</label>
+                        {{ form.stage }}
+                        {% if form.stage.errors %}
+                            <div class="error-messages">{{ form.stage.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.apply_date.id_for_label }}">Apply Date *</label>
+                        {{ form.apply_date }}
+                        {% if form.apply_date.errors %}
+                            <div class="error-messages">{{ form.apply_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.response_date.id_for_label }}">Response Date</label>
+                        {{ form.response_date }}
+                        {% if form.response_date.errors %}
+                            <div class="error-messages">{{ form.response_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.job_url.id_for_label }}">Job URL</label>
+                        {{ form.job_url }}
+                        {% if form.job_url.errors %}
+                            <div class="error-messages">{{ form.job_url.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            {{ form.is_referred }}
+                            Referred?
+                        </label>
+                        {% if form.is_referred.errors %}
+                            <div class="error-messages">{{ form.is_referred.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.notes.id_for_label }}">Notes</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="error-messages">{{ form.notes.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="{% url 'appsManager:view_applications' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Add Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

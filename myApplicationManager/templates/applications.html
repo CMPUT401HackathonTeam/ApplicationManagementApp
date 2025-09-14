@@ -4,242 +4,426 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Applications - Job Portal</title>
+    <title>Applications - Job Portal</title>
     <link rel="stylesheet" href="{% static 'homepage.css' %}">
     <style>
         .applications-container {
             padding: 20px;
         }
         
-        .status-stats {
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header-section h1 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .add-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        .add-btn:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+        
+        .applications-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #f8fafc;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        
+        .table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .company-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .stage-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .stage-tag.applied {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .stage-tag.interview {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .stage-tag.accepted {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+        
+        .stage-tag.rejected {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .stage-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        
+        .stage-dot.applied { background-color: #1e40af; }
+        .stage-dot.interview { background-color: #d97706; }
+        .stage-dot.accepted { background-color: #059669; }
+        .stage-dot.rejected { background-color: #dc2626; }
+        
+        .position-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        .date {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .job-url {
+            color: #3b82f6;
+            text-decoration: underline;
+            font-size: 0.875rem;
+        }
+        
+        .job-url:hover {
+            color: #1d4ed8;
+        }
+        
+        .referral-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .referral-tag.referred {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .referral-tag.not-referred {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .stage-select {
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: #374151;
+        }
+        
+        .empty-state p {
+            margin: 0 0 20px 0;
+        }
+        
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
         
-        .status-card {
+        .stat-card {
             background: white;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             text-align: center;
         }
         
-        .status-card.applied { border-left: 4px solid #3b82f6; }
-        .status-card.interview { border-left: 4px solid #f59e0b; }
-        .status-card.accepted { border-left: 4px solid #10b981; }
-        .status-card.rejected { border-left: 4px solid #ef4444; }
+        .stat-card.applied { border-left: 4px solid #3b82f6; }
+        .stat-card.interview { border-left: 4px solid #f59e0b; }
+        .stat-card.accepted { border-left: 4px solid #10b981; }
+        .stat-card.rejected { border-left: 4px solid #ef4444; }
         
-        .status-count {
+        .stat-number {
             font-size: 2rem;
             font-weight: bold;
             margin: 10px 0;
         }
         
-        .applications-list {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .application-item {
-            padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .application-item:last-child {
-            border-bottom: none;
-        }
-        
-        .application-info h3 {
-            margin: 0 0 5px 0;
-            color: #1f2937;
-        }
-        
-        .application-info p {
-            margin: 0;
+        .stat-label {
             color: #6b7280;
-        }
-        
-        .status-select {
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-        }
-        
-        .status-applied { background-color: #dbeafe; color: #1e40af; }
-        .status-interview { background-color: #fef3c7; color: #92400e; }
-        .status-accepted { background-color: #d1fae5; color: #065f46; }
-        .status-rejected { background-color: #fee2e2; color: #991b1b; }
-        
-        .no-applications {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-        }
-        
-        .back-button {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            background: #3b82f6;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-        }
-        
-        .back-button:hover {
-            background: #2563eb;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div class="applications-container">
-        <a href="{% url 'myApplicationManager:homepage' %}" class="back-button">← Back to Dashboard</a>
-        
-        <h1>My Applications</h1>
-        
-        <!-- Status Statistics -->
-        <div class="status-stats">
-            <div class="status-card applied">
-                <h3>Applied</h3>
-                <div class="status-count">{{ status_counts.APPLIED|default:0 }}</div>
+    <div class="app">
+        <div class="sidebar">
+            <div class="brand">
+                <div class="dot"></div>
+                <span>Job Tracker</span>
             </div>
-            <div class="status-card interview">
-                <h3>Interview</h3>
-                <div class="status-count">{{ status_counts.INTERVIEW|default:0 }}</div>
-            </div>
-            <div class="status-card accepted">
-                <h3>Accepted</h3>
-                <div class="status-count">{{ status_counts.ACCEPTED|default:0 }}</div>
-            </div>
-            <div class="status-card rejected">
-                <h3>Rejected</h3>
-                <div class="status-count">{{ status_counts.REJECTED|default:0 }}</div>
-            </div>
+            <nav>
+                <a href="{% url 'appsManager:homepage' %}" class="nav-item">
+                    <span>🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'appsManager:view_applications' %}" class="nav-item active">
+                    <span>📋</span>
+                    <span>Applications</span>
+                </a>
+            </nav>
         </div>
         
-        <!-- Applications List -->
-        <div class="applications-list">
-            {% if applications %}
-                {% for application in applications %}
-                <div class="application-item">
-                    <div class="application-info">
-                        <h3>{{ application.jobID.companyName|default:"Unknown Company" }}</h3>
-                        <p>{{ application.jobID.position|default:"Unknown Position" }}</p>
-                        <small>Applied: {{ application.jobID.created_at|date:"M d, Y"|default:"Unknown Date" }}</small>
-                    </div>
-                    <div>
-                        <select class="status-select status-{{ application.status|lower }}" 
-                                data-application-id="{{ application.id }}"
-                                onchange="updateStatus(this)">
-                            <option value="APPLIED" {% if application.status == 'APPLIED' %}selected{% endif %}>Applied</option>
-                            <option value="INTERVIEW" {% if application.status == 'INTERVIEW' %}selected{% endif %}>Interview</option>
-                            <option value="ACCEPTED" {% if application.status == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
-                            <option value="REJECTED" {% if application.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
-                        </select>
-                    </div>
+        <div class="main">
+            <div class="applications-container">
+                <div class="header-section">
+                    <h1>Applications</h1>
+                    <a href="{% url 'appsManager:add_application' %}" class="add-btn">
+                        <span>+</span>
+                        <span>Add Application</span>
+                    </a>
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="no-applications">
-                    <h3>No Applications Yet</h3>
-                    <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
-                </div>
-            {% endif %}
+                
+                {% if applications %}
+                    <!-- Statistics Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card applied">
+                            <div class="stat-number">{{ status_counts.APPLIED }}</div>
+                            <div class="stat-label">Applied</div>
+                        </div>
+                        <div class="stat-card interview">
+                            <div class="stat-number">{{ status_counts.INTERVIEW }}</div>
+                            <div class="stat-label">Interview</div>
+                        </div>
+                        <div class="stat-card accepted">
+                            <div class="stat-number">{{ status_counts.ACCEPTED }}</div>
+                            <div class="stat-label">Accepted</div>
+                        </div>
+                        <div class="stat-card rejected">
+                            <div class="stat-number">{{ status_counts.REJECTED }}</div>
+                            <div class="stat-label">Rejected</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Applications Table -->
+                    <div class="applications-table">
+                        <div class="table-header">
+                            <h2 class="table-title">All Applications ({{ total_applications }})</h2>
+                        </div>
+                        
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span>🏢</span>
+                                        Company
+                                    </th>
+                                    <th>
+                                        <span>⭐</span>
+                                        Stage
+                                    </th>
+                                    <th>
+                                        <span>👔</span>
+                                        Position
+                                    </th>
+                                    <th>
+                                        <span>📅</span>
+                                        Apply Date
+                                    </th>
+                                    <th>
+                                        <span>📅</span>
+                                        Response Date
+                                    </th>
+                                    <th>
+                                        <span>🔗</span>
+                                        Job URL
+                                    </th>
+                                    <th>
+                                        <span>👥</span>
+                                        Referral?
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td>
+                                        <div class="company-name">{{ app.company_name }}</div>
+                                    </td>
+                                    <td>
+                                        <select class="stage-select" data-application-id="{{ app.id }}" onchange="updateStage(this)">
+                                            <option value="APPLIED" {% if app.stage == 'APPLIED' %}selected{% endif %}>Applied</option>
+                                            <option value="INTERVIEW" {% if app.stage == 'INTERVIEW' %}selected{% endif %}>Interview</option>
+                                            <option value="ACCEPTED" {% if app.stage == 'ACCEPTED' %}selected{% endif %}>Accepted</option>
+                                            <option value="REJECTED" {% if app.stage == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="position-tag">{{ app.position }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="date">{{ app.apply_date|date:"M d, Y" }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="date">
+                                            {% if app.response_date %}
+                                                {{ app.response_date|date:"M d, Y" }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if app.job_url %}
+                                            <a href="{{ app.job_url }}" target="_blank" class="job-url">
+                                                {{ app.job_url|truncatechars:20 }}
+                                            </a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="referral-tag {% if app.is_referred %}referred{% else %}not-referred{% endif %}">
+                                            {% if app.is_referred %}Referred!{% else %}No{% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No applications yet</h3>
+                        <p>Start tracking your job applications by adding your first one.</p>
+                        <a href="{% url 'appsManager:add_application' %}" class="add-btn">
+                            <span>+</span>
+                            <span>Add Your First Application</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 
     <script>
-        function updateStatus(selectElement) {
+        function updateStage(selectElement) {
             const applicationId = selectElement.dataset.applicationId;
-            const newStatus = selectElement.value;
+            const newStage = selectElement.value;
             
-            fetch('{% url "myApplicationManager:update_application_status" %}', {
+            fetch('{% url "appsManager:update_application_status" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
+                    'X-CSRFToken': '{{ csrf_token }}'
                 },
                 body: JSON.stringify({
                     application_id: applicationId,
-                    status: newStatus
+                    status: newStage
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update the select element styling
-                    selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
-                    
-                    // Show success message
-                    showMessage('Status updated successfully!', 'success');
-                    
-                    // Reload the page to update statistics
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
+                    // Update the UI to reflect the change
+                    location.reload(); // Simple refresh for now
                 } else {
-                    showMessage('Error updating status: ' + data.error, 'error');
-                    // Revert the selection
+                    alert('Error updating application status: ' + data.error);
+                    // Revert the select value
                     selectElement.value = selectElement.dataset.originalValue;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showMessage('Error updating status. Please try again.', 'error');
-                // Revert the selection
+                alert('Error updating application status');
+                // Revert the select value
                 selectElement.value = selectElement.dataset.originalValue;
             });
         }
         
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        
-        function showMessage(message, type) {
-            // Create a simple message display
-            const messageDiv = document.createElement('div');
-            messageDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 20px;
-                border-radius: 6px;
-                color: white;
-                font-weight: bold;
-                z-index: 1000;
-                ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
-            `;
-            messageDiv.textContent = message;
-            document.body.appendChild(messageDiv);
-            
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
-        }
-        
-        // Store original values for reverting
+        // Store original values for reverting on error
         document.addEventListener('DOMContentLoaded', function() {
-            const selects = document.querySelectorAll('.status-select');
+            const selects = document.querySelectorAll('.stage-select');
             selects.forEach(select => {
                 select.dataset.originalValue = select.value;
             });
