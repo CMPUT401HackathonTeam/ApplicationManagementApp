@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('myApplicationManager', '0002_jobstoapply_profile_and_more'),
+        ('myApplicationManager', '0001_initial'),
     ]
 
     operations = [
