@@ -146,6 +146,50 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# PDF files
+*.pdf
+
+# Virtual environments (already included above, but adding for clarity)
+venv/
+.venv/
+venv.bak/
+myprojectenv/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite3
+*.sqlite
+
+# Static files (if using collectstatic)
+staticfiles/
+
 # Pyre type checker
 .pyre/
 
