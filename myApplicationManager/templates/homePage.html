@@ -1,365 +1,347 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en-US">
-    <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job Dashboard</title>
-    <link rel="stylesheet" href="{% static 'homepage.css' %}">
-    <style>
-      .applications-container {
-        padding: 20px;
-      }
-      
-      .application-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px;
-        margin: 10px 0;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      
-      .application-info h3 {
-        margin: 0 0 5px 0;
-        color: #1f2937;
-      }
-      
-      .application-info p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 14px;
-      }
-      
-      .application-info small {
-        color: #9ca3af;
-        font-size: 12px;
-      }
-      
-      .status-select {
-        padding: 8px 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        background: white;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      
-      .status-applied { background-color: #dbeafe; color: #1e40af; }
-      .status-interview { background-color: #fef3c7; color: #92400e; }
-      .status-accepted { background-color: #d1fae5; color: #065f46; }
-      .status-rejected { background-color: #fee2e2; color: #991b1b; }
-      
-      .no-applications {
-        text-align: center;
-        padding: 40px;
-        color: #6b7280;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      
-      .applications-list {
-        margin-top: 20px;
-      }
-    </style>
-    </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Dashboard</title>
+  <link rel="stylesheet" href="{% static 'homepage.css' %}">
+  <style>
+    .applications-container { padding: 20px; }
+    .application-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .application-info h3 { margin: 0 0 5px 0; color: #1f2937; }
+    .application-info p { margin: 0; color: #6b7280; font-size: 14px; }
+    .application-info small { color: #9ca3af; font-size: 12px; }
+    .status-select {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .status-applied { background-color: #dbeafe; color: #1e40af; }
+    .status-interview { background-color: #fef3c7; color: #92400e; }
+    .status-accepted { background-color: #d1fae5; color: #065f46; }
+    .status-rejected { background-color: #fee2e2; color: #991b1b; }
+    .no-applications {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .applications-list { margin-top: 20px; }
+    .logout-button {
+      text-decoration: none;
+      color: #1e40af;
+      font-weight: 600;
+      padding: 0.5em 1em;
+      border-radius: 0.5em;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
 <body>
-  <div class="app">
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
 
-    <aside class="sidebar">
-      <div class="brand"><span class="dot" aria-hidden="true"></span> Job Portal</div>
-
-      <div class="profile">
+    <!-- ✅ Make Profile Clickable -->
+    <div class="profile">
+      <a href="#profile" data-view="profile" style="text-decoration:none; color:inherit;">
         <div class="avatar" aria-hidden="true">
           <div class="placeholder">P</div>
         </div>
         <div class="meta">
           <div class="name">Profile</div>
         </div>
+      </a>
+    </div>
+
+    <nav class="nav" aria-label="Primary">
+      <a href="#dashboard" class="active" data-view="dashboard"><span class="icon">🏠</span><span>Dashboard</span></a>
+      <a href="#inbox" data-view="inbox"><span class="icon">📥</span><span>Inbox</span></a>
+      <a href="#applications" data-view="applications"><span class="icon">📝</span><span>Applications</span></a>
+      <a href="#jobs" data-view="jobs"><span class="icon">💼</span><span>Jobs</span></a>
+      <a href="#resume" data-view="resume"><span class="icon">📄</span><span>Resume</span></a>
+    </nav>
+
+    <!-- Logout & Footer -->
+    <div style="margin-top:auto; display:flex; flex-direction:column; gap:0.5em;">
+      <form method="post" action="{% url 'myApplicationManager:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">🔓 Logout</button>
+      </form>
+      <div style="font-size:12px; color:#9ca3af; opacity:.9;">© Job Portal 2025</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="title" id="page-title">Overview</div>
+      <div class="filters" id="filters" hidden>
+        <select id="filter-scope" aria-label="Scope">
+          <option value="all" selected>All</option>
+        </select>
+        <select id="filter-read" aria-label="Read Status">
+          <option value="unread">Unread</option>
+          <option value="read">Read</option>
+        </select>
+        <select id="filter-sort" aria-label="Sort">
+          <option value="newest" selected>Newest</option>
+          <option value="oldest">Oldest</option>
+        </select>
       </div>
+    </div>
 
-      <nav class="nav" aria-label="Primary">
-        <a href="#dashboard" class="active" data-view="dashboard"><span class="icon">🏠</span><span>Dashboard</span></a>
-        <a href="#inbox" data-view="inbox"><span class="icon">📥</span><span>Inbox</span></a>
-        <a href="#applications" data-view="applications"><span class="icon">📝</span><span>Applications</span></a>
-        <a href="#jobs" data-view="jobs"><span class="icon">💼</span><span>Jobs</span></a>
-        <a href="#resume" data-view="resume"><span class="icon">📄</span><span>Resume</span></a>
-      </nav>
+    <!-- Views -->
+    <section id="dashboard-view" class="view">
+      <section class="stats-grid" aria-label="Stats">
+        <article class="card" tabindex="0">
+          <h3>Applications Submitted</h3>
+          <div class="kpi">0</div>
+          <div class="muted">30 Days</div>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Interviews Booked</h3>
+          <div class="kpi">0</div>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Current Openings</h3>
+          <div class="kpi">0</div>
+          <div class="muted">Based on your preference</div>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Inbox</h3>
+          <div class="kpi">0</div>
+          <div class="muted">0 unread</div>
+        </article>
+      </section>
+    </section>
 
-      <div style="margin-top:auto; font-size:12px; color:#9ca3af; opacity:.9;"></div>
-    </aside>
+    <section id="inbox-view" class="view hidden" aria-label="Inbox">
+      <ul class="inbox-list"></ul>
+    </section>
 
-    <main class="main">
-      <div class="topbar">
-        <div class="title" id="page-title">Overview</div>
-
-        <div class="filters" id="filters" hidden>
-          <select id="filter-scope" aria-label="Scope">
-            <option value="all" selected>All</option>
-          </select>
-          <select id="filter-read" aria-label="Read Status">
-            <option value="unread">Unread</option>
-            <option value="read">Read</option>
-          </select>
-          <select id="filter-sort" aria-label="Sort">
-            <option value="newest" selected>Newest</option>
-            <option value="oldest">Oldest</option>
-          </select>
+    <section id="applications-view" class="view hidden">
+      <div class="applications-container">
+        <h2>My Applications</h2>
+        <div id="applications-stats" class="stats-grid"></div>
+        <div id="applications-list" class="applications-list"></div>
+        <div id="no-applications" class="no-applications hidden">
+          <h3>No Applications Yet</h3>
+          <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
         </div>
       </div>
+    </section>
 
-      <section id="dashboard-view" class="view">
-        <section class="stats-grid" aria-label="Stats">
-          <article class="card" tabindex="0">
-            <h3>Applications Submitted</h3>
-            <div class="kpi">0</div>
-            <div class="muted">30 Days</div>
-          </article>
+    <section id="jobs-view" class="view hidden"></section>
+    <section id="resume-view" class="view hidden"></section>
 
-          <article class="card" tabindex="0">
-            <h3>Interviews Booked</h3>
-            <div class="kpi">0</div>
-          </article>
+   <!-- ✅ Profile Page View -->
+<section id="profile-view" class="view hidden">
+  <div class="profile-container-full">
+    <h2>My Profile</h2>
+    <div id="profile-container">
+      <p>Loading profile...</p>
+    </div>
+  </div>
+</section>
 
-          <article class="card" tabindex="0">
-            <h3>Current Openings</h3>
-            <div class="kpi">0</div>
-            <div class="muted">Based on your preference</div>
-          </article>
+<style>
+  /* Make profile container fill more of the page */
+  .profile-container-full {
+    padding: 20px;
+    background: transparent; /* remove the light blue box */
+    max-width: none; /* remove max width restriction */
+    width: 100%;
+    margin: 0 auto;
+  }
 
-          <article class="card" tabindex="0">
-            <h3>Inbox</h3>
-            <div class="kpi">0</div>
-            <div class="muted">0 unread</div>
-          </article>
-        </section>
-      </section>
+  /* Style profile details */
+  #profile-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #1e3a8a;
+  }
 
-      <section id="inbox-view" class="view hidden" aria-label="Inbox">
-        <ul class="inbox-list">
-        </ul>
-      </section>
+  #profile-container li {
+    margin-bottom: 10px;
+  }
 
-      <section id="applications-view" class="view hidden">
-        <div class="applications-container">
-          <h2>My Applications</h2>
-          <div id="applications-stats" class="stats-grid"></div>
-          <div id="applications-list" class="applications-list"></div>
-          <div id="no-applications" class="no-applications hidden">
-            <h3>No Applications Yet</h3>
-            <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
+  #profile-container a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 0.5em 1em;
+    background: #1e40af;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  #profile-container a:hover {
+    background: #2563eb;
+  }
+</style>
+
+
+<script>
+(function () {
+  const navLinks = document.querySelectorAll('.nav a[data-view], .profile a[data-view]');
+  const views = {
+    dashboard: document.getElementById('dashboard-view'),
+    inbox: document.getElementById('inbox-view'),
+    applications: document.getElementById('applications-view'),
+    jobs: document.getElementById('jobs-view'),
+    resume: document.getElementById('resume-view'),
+    profile: document.getElementById('profile-view')
+  };
+  const pageTitle = document.getElementById('page-title');
+  const filters = document.getElementById('filters');
+
+  function setActive(link) {
+    navLinks.forEach(a => a.classList.remove('active'));
+    if (link) link.classList.add('active');
+  }
+
+  function showView(name) {
+    Object.entries(views).forEach(([k, el]) => {
+      if (!el) return;
+      el.classList.toggle('hidden', k !== name);
+    });
+
+    if (name === 'inbox') {
+      pageTitle.textContent = 'Inbox';
+      filters.hidden = false;
+    } else if (name === 'applications') {
+      pageTitle.textContent = 'Applications';
+      filters.hidden = true;
+      loadApplicationsData();
+    } else if (name === 'profile') {
+      pageTitle.textContent = 'Profile';
+      filters.hidden = true;
+      loadProfileData();
+    } else {
+      pageTitle.textContent = (name === 'dashboard') ? 'Overview' : name[0].toUpperCase() + name.slice(1);
+      filters.hidden = true;
+    }
+  }
+
+  navLinks.forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const view = a.getAttribute('data-view');
+      setActive(a);
+      showView(view);
+      history.pushState(null, '', '#' + view);
+    });
+  });
+
+  const initial = (location.hash || '#dashboard').replace('#', '');
+  const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
+  setActive(initialLink || document.querySelector('.nav a[data-view="dashboard"]'));
+  showView(initial in views ? initial : 'dashboard');
+
+  window.addEventListener('popstate', () => {
+    const v = (location.hash || '#dashboard').replace('#', '');
+    const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
+    setActive(link);
+    showView(v in views ? v : 'dashboard');
+  });
+
+  function loadApplicationsData() {
+    fetch('{% url "myApplicationManager:get_applications_data" %}')
+      .then(response => response.json())
+      .then(data => { displayApplicationsData(data); })
+      .catch(() => showApplicationsError());
+  }
+
+  function displayApplicationsData(data) {
+    const statsContainer = document.getElementById('applications-stats');
+    const listContainer = document.getElementById('applications-list');
+    const noApplications = document.getElementById('no-applications');
+
+    statsContainer.innerHTML = `
+      <article class="card"><h3>Applied</h3><div class="kpi">${data.status_counts.APPLIED || 0}</div></article>
+      <article class="card"><h3>Interview</h3><div class="kpi">${data.status_counts.INTERVIEW || 0}</div></article>
+      <article class="card"><h3>Accepted</h3><div class="kpi">${data.status_counts.ACCEPTED || 0}</div></article>
+      <article class="card"><h3>Rejected</h3><div class="kpi">${data.status_counts.REJECTED || 0}</div></article>
+    `;
+
+    if (data.applications?.length) {
+      noApplications.classList.add('hidden');
+      listContainer.innerHTML = data.applications.map(app => `
+        <div class="application-item">
+          <div class="application-info">
+            <h3>${app.company_name}</h3>
+            <p>${app.position}</p>
+            <small>Applied: ${app.applied_date}</small>
+          </div>
+          <div>
+            <select class="status-select status-${app.status.toLowerCase()}"
+                    data-application-id="${app.id}"
+                    onchange="updateApplicationStatus(this)">
+              <option value="APPLIED" ${app.status === 'APPLIED' ? 'selected' : ''}>Applied</option>
+              <option value="INTERVIEW" ${app.status === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
+              <option value="ACCEPTED" ${app.status === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
+              <option value="REJECTED" ${app.status === 'REJECTED' ? 'selected' : ''}>Rejected</option>
+            </select>
           </div>
         </div>
-      </section>
-      <section id="jobs-view" class="view hidden"></section>
-      <section id="resume-view" class="view hidden"></section>
-    </main>
-  </div>
+      `).join('');
+    } else {
+      listContainer.innerHTML = '';
+      noApplications.classList.remove('hidden');
+    }
+  }
 
-  <script>
-    (function () {
-      const navLinks = document.querySelectorAll('.nav a[data-view]');
-      const views = {
-        dashboard: document.getElementById('dashboard-view'),
-        inbox: document.getElementById('inbox-view'),
-        applications: document.getElementById('applications-view'),
-        jobs: document.getElementById('jobs-view'),
-        resume: document.getElementById('resume-view')
-      };
-      const pageTitle = document.getElementById('page-title');
-      const filters = document.getElementById('filters');
+  function showApplicationsError() {
+    document.getElementById('applications-list').innerHTML =
+      '<div class="error">Error loading applications. Please try again.</div>';
+  }
 
-      function setActive(link) {
-        navLinks.forEach(a => a.classList.remove('active'));
-        if (link) link.classList.add('active');
-      }
-
-      function showView(name) {
-        Object.entries(views).forEach(([k, el]) => {
-          if (!el) return;
-          if (k === name) el.classList.remove('hidden');
-          else el.classList.add('hidden');
-        });
-
-        if (name === 'inbox') {
-          pageTitle.textContent = 'Inbox';
-          filters.hidden = false;
-        } else if (name === 'applications') {
-          pageTitle.textContent = 'Applications';
-          filters.hidden = true;
-          loadApplicationsData();
-        } else {
-          pageTitle.textContent = (name === 'dashboard') ? 'Overview' : name[0].toUpperCase() + name.slice(1);
-          filters.hidden = true;
-        }
-      }
-
-      navLinks.forEach(a => {
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          const view = a.getAttribute('data-view');
-          setActive(a);
-          showView(view);
-          history.pushState(null, '', '#' + view); 
-        });
-      });
-
-      const initial = (location.hash || '#dashboard').replace('#', '');
-      const initialLink = Array.from(navLinks).find(a => a.getAttribute('data-view') === initial);
-      setActive(initialLink || document.querySelector('.nav a[data-view="dashboard"]'));
-      showView(initial in views ? initial : 'dashboard');
-
-      window.addEventListener('popstate', () => {
-        const v = (location.hash || '#dashboard').replace('#', '');
-        const link = Array.from(navLinks).find(a => a.getAttribute('data-view') === v);
-        setActive(link);
-        showView(v in views ? v : 'dashboard');
-      });
-
-      // Load applications data
-      function loadApplicationsData() {
-        fetch('{% url "myApplicationManager:get_applications_data" %}')
-          .then(response => response.json())
-          .then(data => {
-            displayApplicationsData(data);
-          })
-          .catch(error => {
-            console.error('Error loading applications:', error);
-            showApplicationsError();
-          });
-      }
-
-      function displayApplicationsData(data) {
-        const statsContainer = document.getElementById('applications-stats');
-        const listContainer = document.getElementById('applications-list');
-        const noApplications = document.getElementById('no-applications');
-
-        // Display statistics
-        statsContainer.innerHTML = `
-          <article class="card">
-            <h3>Applied</h3>
-            <div class="kpi">${data.status_counts.APPLIED || 0}</div>
-          </article>
-          <article class="card">
-            <h3>Interview</h3>
-            <div class="kpi">${data.status_counts.INTERVIEW || 0}</div>
-          </article>
-          <article class="card">
-            <h3>Accepted</h3>
-            <div class="kpi">${data.status_counts.ACCEPTED || 0}</div>
-          </article>
-          <article class="card">
-            <h3>Rejected</h3>
-            <div class="kpi">${data.status_counts.REJECTED || 0}</div>
-          </article>
+  function loadProfileData() {
+    fetch('{% url "myApplicationManager:profile_detail_api" %}')
+      .then(response => response.json())
+      .then(data => {
+        const profile = data.profile;
+        document.getElementById('profile-container').innerHTML = `
+          <ul>
+            <li><strong>Email:</strong> ${profile.email}</li>
+            <li><strong>First Name:</strong> ${profile.firstName}</li>
+            <li><strong>Last Name:</strong> ${profile.lastName}</li>
+            <li><strong>Phone:</strong> ${profile.phoneNumber}</li>
+            <li><strong>Street:</strong> ${profile.street}</li>
+            <li><strong>City:</strong> ${profile.city}</li>
+            <li><strong>Province:</strong> ${profile.province}</li>
+            <li><strong>Postal Code:</strong> ${profile.postalCode}</li>
+          </ul>
+          <a href="{% url 'myApplicationManager:profile_edit' %}">Edit Profile</a>
         `;
-
-        // Display applications list
-        if (data.applications && data.applications.length > 0) {
-          noApplications.classList.add('hidden');
-          listContainer.innerHTML = data.applications.map(app => `
-            <div class="application-item">
-              <div class="application-info">
-                <h3>${app.company_name}</h3>
-                <p>${app.position}</p>
-                <small>Applied: ${app.applied_date}</small>
-              </div>
-              <div>
-                <select class="status-select status-${app.status.toLowerCase()}" 
-                        data-application-id="${app.id}"
-                        onchange="updateApplicationStatus(this)">
-                  <option value="APPLIED" ${app.status === 'APPLIED' ? 'selected' : ''}>Applied</option>
-                  <option value="INTERVIEW" ${app.status === 'INTERVIEW' ? 'selected' : ''}>Interview</option>
-                  <option value="ACCEPTED" ${app.status === 'ACCEPTED' ? 'selected' : ''}>Accepted</option>
-                  <option value="REJECTED" ${app.status === 'REJECTED' ? 'selected' : ''}>Rejected</option>
-                </select>
-              </div>
-            </div>
-          `).join('');
-        } else {
-          listContainer.innerHTML = '';
-          noApplications.classList.remove('hidden');
-        }
-      }
-
-      function showApplicationsError() {
-        const listContainer = document.getElementById('applications-list');
-        listContainer.innerHTML = '<div class="error">Error loading applications. Please try again.</div>';
-      }
-
-      function updateApplicationStatus(selectElement) {
-        const applicationId = selectElement.dataset.applicationId;
-        const newStatus = selectElement.value;
-        
-        fetch('{% url "myApplicationManager:update_application_status" %}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-          },
-          body: JSON.stringify({
-            application_id: applicationId,
-            status: newStatus
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
-            showMessage('Status updated successfully!', 'success');
-            // Reload applications data to update statistics
-            loadApplicationsData();
-          } else {
-            showMessage('Error updating status: ' + data.error, 'error');
-            selectElement.value = selectElement.dataset.originalValue;
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          showMessage('Error updating status. Please try again.', 'error');
-          selectElement.value = selectElement.dataset.originalValue;
-        });
-      }
-
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      }
-
-      function showMessage(message, type) {
-        const messageDiv = document.createElement('div');
-        messageDiv.style.cssText = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          padding: 15px 20px;
-          border-radius: 6px;
-          color: white;
-          font-weight: bold;
-          z-index: 1000;
-          ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
-        `;
-        messageDiv.textContent = message;
-        document.body.appendChild(messageDiv);
-        
-        setTimeout(() => {
-          messageDiv.remove();
-        }, 3000);
-      }
-    })();
-  </script>
+      })
+      .catch(() => {
+        document.getElementById('profile-container').innerHTML =
+          '<div class="error">Error loading profile. Please try again.</div>';
+      });
+  }
+})();
+</script>
 </body>
 </html>
