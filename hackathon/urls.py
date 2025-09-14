@@ -22,9 +22,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path ('', MyLoginView.as_view(template_name='landingPage.html'), name='login'),
     path('', include('myApplicationManager.urls', namespace='appsManager')),
     path('admin/', admin.site.urls),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 

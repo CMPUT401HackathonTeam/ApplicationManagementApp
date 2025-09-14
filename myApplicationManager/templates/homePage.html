@@ -145,12 +145,22 @@
 
       <section id="applications-view" class="view hidden">
         <div class="applications-container">
-          <h2>My Applications</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>My Applications</h2>
+            <a href="{% url 'appsManager:add_application' %}" style="background-color: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
+              <span>+</span>
+              <span>Add Application</span>
+            </a>
+          </div>
           <div id="applications-stats" class="stats-grid"></div>
           <div id="applications-list" class="applications-list"></div>
           <div id="no-applications" class="no-applications hidden">
             <h3>No Applications Yet</h3>
-            <p>You haven't submitted any job applications yet. Start by browsing available jobs!</p>
+            <p>You haven't submitted any job applications yet. Start by adding your first application!</p>
+            <a href="{% url 'appsManager:add_application' %}" style="background-color: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-top: 20px;">
+              <span>+</span>
+              <span>Add Your First Application</span>
+            </a>
           </div>
         </div>
       </section>

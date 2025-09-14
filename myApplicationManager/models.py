@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import QuerySet, Manager
-from datetime import datetime
+from datetime import datetime, date
 import pytz
 import uuid
 
@@ -54,18 +54,30 @@ class JobApplication(BaseModel):
         - Position Name
         - Position Details (optional)
         - Status
+        - Apply Date
+        - Response Date
+        - Job URL
+        - Referral Status
     
     '''
     StatusChoices=[
-        ('ACCEPTED', 'accepted'),
-        ('REJECTED', 'rejected'),
-        ('APPLIED', 'applied'),
-        ('INTERVIEW', 'interview'),
+        ('APPLIED', 'Applied'),
+        ('INTERVIEW', 'Interview'),
+        ('ACCEPTED', 'Accepted'),
+        ('REJECTED', 'Rejected'),
     ]
-    status = models.CharField(max_length=20, choices=StatusChoices, default='APPLIED')
-    resumeID = models.ForeignKey('Resume', on_delete=models.CASCADE, null=True)
-    jobID = models.ForeignKey('JobsToApply', on_delete=models.CASCADE, null=True)
+    company_name = models.CharField(max_length=200, default='')
+    position = models.CharField(max_length=200, default='')
+    stage = models.CharField(max_length=20, choices=StatusChoices, default='APPLIED')
+    apply_date = models.DateField(default=date.today, null=True, blank=True)
+    response_date = models.DateField(null=True, blank=True)
+    job_url = models.CharField(max_length=500, blank=True)
+    is_referred = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+    resumeID = models.ForeignKey('Resume', on_delete=models.CASCADE, null=True, blank=True)
     profileID = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 class Profile(BaseModel):
     '''A class representing a user of the application

@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import viewsets, permissions, status
 from .models import JobApplication, Profile, JobsToApply, Resume
 from .serializers import JobApplicationSerializer
+from .forms import JobApplicationForm
 from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -33,8 +34,8 @@ class MyLoginView(LoginView):
         login(self.request, form.get_user())
         user = form.get_user()
         if not user:
-            return redirect("myApplicationManager:register")
-        return redirect("myApplicationManager:homepage") 
+            return redirect("appsManager:register")
+        return redirect("appsManager:homepage") 
     
     def form_invalid(self, form):
         username = self.request.POST.get('username')
@@ -63,7 +64,7 @@ def register(request):
         if form.is_valid():
             user = form.save()     
             login(request, user)        
-            return redirect("myApplicationManager:homepage")      
+            return redirect("appsManager:homepage")      
     else:
         form = UserCreationForm()
     return render(request, "register.html", {"form": form})
@@ -84,14 +85,14 @@ def view_applications(request):
         )
         
         # Get all applications for this user
-        applications = JobApplication.objects.filter(profileID=profile).order_by('-id')
+        applications = JobApplication.objects.filter(profileID=profile).order_by('-apply_date')
         
         # Count applications by status
         status_counts = {
-            'APPLIED': applications.filter(status='APPLIED').count(),
-            'INTERVIEW': applications.filter(status='INTERVIEW').count(),
-            'ACCEPTED': applications.filter(status='ACCEPTED').count(),
-            'REJECTED': applications.filter(status='REJECTED').count(),
+            'APPLIED': applications.filter(stage='APPLIED').count(),
+            'INTERVIEW': applications.filter(stage='INTERVIEW').count(),
+            'ACCEPTED': applications.filter(stage='ACCEPTED').count(),
+            'REJECTED': applications.filter(stage='REJECTED').count(),
         }
         
         context = {
@@ -105,6 +106,35 @@ def view_applications(request):
     except Exception as e:
         messages.error(request, f"Error loading applications: {str(e)}")
         return render(request, 'applications.html', {'applications': [], 'status_counts': {}, 'total_applications': 0})
+
+
+# Add new application
+@login_required
+def add_application(request):
+    """Add a new job application"""
+    if request.method == 'POST':
+        form = JobApplicationForm(request.POST)
+        if form.is_valid():
+            # Get or create user profile
+            profile, created = Profile.objects.get_or_create(
+                email=request.user.email,
+                defaults={
+                    'firstName': request.user.first_name or '',
+                    'lastName': request.user.last_name or '',
+                }
+            )
+            
+            # Create application instance
+            application = form.save(commit=False)
+            application.profileID = profile
+            application.save()
+            
+            messages.success(request, 'Application added successfully!')
+            return redirect('appsManager:view_applications')
+    else:
+        form = JobApplicationForm()
+    
+    return render(request, 'add_application.html', {'form': form})
 
 
 # US 5.2: Track status of applications
@@ -142,7 +172,7 @@ def update_application_status(request):
             return JsonResponse({'error': 'Permission denied'}, status=403)
         
         # Update status
-        application.status = new_status
+        application.stage = new_status
         application.save()
         
         return JsonResponse({
@@ -176,10 +206,10 @@ def get_applications_data(request):
         
         # Count applications by status
         status_counts = {
-            'APPLIED': applications.filter(status='APPLIED').count(),
-            'INTERVIEW': applications.filter(status='INTERVIEW').count(),
-            'ACCEPTED': applications.filter(status='ACCEPTED').count(),
-            'REJECTED': applications.filter(status='REJECTED').count(),
+            'APPLIED': applications.filter(stage='APPLIED').count(),
+            'INTERVIEW': applications.filter(stage='INTERVIEW').count(),
+            'ACCEPTED': applications.filter(stage='ACCEPTED').count(),
+            'REJECTED': applications.filter(stage='REJECTED').count(),
         }
         
         # Prepare applications data for JSON response
@@ -187,11 +217,14 @@ def get_applications_data(request):
         for app in applications:
             applications_data.append({
                 'id': app.id,
-                'company_name': app.jobID.companyName if app.jobID else 'N/A',
-                'position': app.jobID.position if app.jobID else 'N/A',
-                'status': app.status,
-                'status_display': dict(JobApplication.StatusChoices)[app.status],
-                'applied_date': app.jobID.created_at.strftime('%Y-%m-%d') if app.jobID and hasattr(app.jobID, 'created_at') else 'N/A',
+                'company_name': app.company_name,
+                'position': app.position,
+                'stage': app.stage,
+                'stage_display': dict(JobApplication.StatusChoices)[app.stage],
+                'apply_date': app.apply_date.strftime('%Y-%m-%d'),
+                'response_date': app.response_date.strftime('%Y-%m-%d') if app.response_date else None,
+                'job_url': app.job_url,
+                'is_referred': app.is_referred,
             })
         
         return JsonResponse({
